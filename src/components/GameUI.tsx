@@ -2,14 +2,14 @@ import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard } from 'lucide-r
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
-import type { ShapeType, OpType } from '../types/game';
+import type { ToolMode, OpType } from '../types/game';
 
 interface GameUIProps {
   currentLevel: number;
   accuracy: number;
-  selectedShape: ShapeType;
+  activeTool: ToolMode;
   selectedOp: OpType;
-  onSelectShape: (shape: ShapeType) => void;
+  onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
   onClear: () => void;
   onFinalize: () => void;
@@ -18,9 +18,9 @@ interface GameUIProps {
 export function GameUI({
   currentLevel,
   accuracy,
-  selectedShape,
+  activeTool,
   selectedOp,
-  onSelectShape,
+  onSelectTool,
   onSelectOp,
   onClear,
   onFinalize,
@@ -61,7 +61,7 @@ export function GameUI({
             <Keyboard size={12} /> 1 2 3 4 Operations
           </p>
           <p className="flex items-center justify-end gap-2 mb-1">
-            <Orbit size={12} /> Click to Add/Drag
+            <Orbit size={12} /> Drag to Select/Move
           </p>
           <p className="flex items-center justify-end gap-2 mb-1">
             <Layers size={12} /> Scroll to Resize
@@ -86,9 +86,9 @@ export function GameUI({
 
       {/* Bottom Tool Palette */}
       <ToolPalette
-        selectedShape={selectedShape}
+        activeTool={activeTool}
         selectedOp={selectedOp}
-        onSelectShape={onSelectShape}
+        onSelectTool={onSelectTool}
         onSelectOp={onSelectOp}
       />
     </div>

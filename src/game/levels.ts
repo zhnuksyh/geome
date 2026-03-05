@@ -27,59 +27,56 @@ export const getShapePath = (type: ShapeType, size: number): Path2D => {
 };
 
 /**
- * Draws a single shape on the target canvas with the given composite operation.
- * Used to build multi-shape target compositions.
+ * Helper to draw a shape directly (used primarily for rendering targets).
  */
-export const drawTargetShape = (
-    tCtx: CanvasRenderingContext2D,
-    op: GlobalCompositeOperation,
+export const drawShape = (
+    ctx: CanvasRenderingContext2D,
     type: ShapeType,
+    op: GlobalCompositeOperation,
     x: number,
     y: number,
     size: number,
-    rotation = 0
+    rotation: number = 0,
+    fillStyle: string = 'black'
 ) => {
-    tCtx.globalCompositeOperation = op;
-    tCtx.save();
-    tCtx.translate(x, y);
-    tCtx.rotate(rotation);
-    tCtx.fill(getShapePath(type, size));
-    tCtx.restore();
+    ctx.globalCompositeOperation = op;
+    ctx.fillStyle = fillStyle;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.fill(getShapePath(type, size));
+    ctx.restore();
 };
 
-/** Game level definitions */
+/** Game level definitions. Kept as target shapes so we can enable distance-based snapping. */
 export const LEVELS: LevelDef[] = [
     {
         title: "Vesica Piscis",
-        setup: (ctx) => {
-            ctx.fillStyle = "black";
-            drawTargetShape(ctx, 'source-over', 'circle', 250, 300, 100);
-            drawTargetShape(ctx, 'destination-in', 'circle', 350, 300, 100);
-        }
+        targetShapes: [
+            { type: 'circle', op: 'source-over', x: 250, y: 300, size: 100, rotation: 0 },
+            { type: 'circle', op: 'destination-in', x: 350, y: 300, size: 100, rotation: 0 }
+        ]
     },
     {
         title: "Lunar Subtract",
-        setup: (ctx) => {
-            ctx.fillStyle = "black";
-            drawTargetShape(ctx, 'source-over', 'circle', 300, 300, 130);
-            drawTargetShape(ctx, 'destination-out', 'circle', 360, 260, 110);
-        }
+        targetShapes: [
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 130, rotation: 0 },
+            { type: 'circle', op: 'destination-out', x: 360, y: 260, size: 110, rotation: 0 }
+        ]
     },
     {
         title: "The XOR Eye",
-        setup: (ctx) => {
-            ctx.fillStyle = "black";
-            drawTargetShape(ctx, 'source-over', 'square', 300, 300, 120, Math.PI / 4);
-            drawTargetShape(ctx, 'xor', 'circle', 300, 300, 90);
-        }
+        targetShapes: [
+            { type: 'square', op: 'source-over', x: 300, y: 300, size: 120, rotation: Math.PI / 4 },
+            { type: 'circle', op: 'xor', x: 300, y: 300, size: 90, rotation: 0 }
+        ]
     },
     {
         title: "Constructivist Gate",
-        setup: (ctx) => {
-            ctx.fillStyle = "black";
-            drawTargetShape(ctx, 'source-over', 'square', 300, 300, 140);
-            drawTargetShape(ctx, 'source-over', 'triangle', 300, 160, 140);
-            drawTargetShape(ctx, 'destination-out', 'circle', 300, 340, 80);
-        }
+        targetShapes: [
+            { type: 'square', op: 'source-over', x: 300, y: 300, size: 140, rotation: 0 },
+            { type: 'triangle', op: 'source-over', x: 300, y: 160, size: 140, rotation: 0 },
+            { type: 'circle', op: 'destination-out', x: 300, y: 340, size: 80, rotation: 0 }
+        ]
     }
 ];

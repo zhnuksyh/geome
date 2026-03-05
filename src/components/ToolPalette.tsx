@@ -1,17 +1,18 @@
-import { Circle, Square, Triangle, Combine, Minus, Target, Orbit } from 'lucide-react';
-import type { ShapeType, OpType } from '../types/game';
+import { Circle, Square, Triangle, Combine, Minus, Target, Orbit, MousePointer2 } from 'lucide-react';
+import type { ToolMode, OpType } from '../types/game';
 
 interface ToolPaletteProps {
-  selectedShape: ShapeType;
+  activeTool: ToolMode;
   selectedOp: OpType;
-  onSelectShape: (shape: ShapeType) => void;
+  onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
 }
 
 const PRIMITIVES = [
-  { id: 'circle' as ShapeType, icon: Circle, label: 'Circle', key: 'C' },
-  { id: 'square' as ShapeType, icon: Square, label: 'Square', key: 'S' },
-  { id: 'triangle' as ShapeType, icon: Triangle, label: 'Triangle', key: 'T' },
+  { id: 'select' as ToolMode, icon: MousePointer2, label: 'Select', key: 'V' },
+  { id: 'circle' as ToolMode, icon: Circle, label: 'Circle', key: 'C' },
+  { id: 'square' as ToolMode, icon: Square, label: 'Square', key: 'S' },
+  { id: 'triangle' as ToolMode, icon: Triangle, label: 'Triangle', key: 'T' },
 ];
 
 const OPERATIONS = [
@@ -21,25 +22,25 @@ const OPERATIONS = [
   { id: 'xor' as OpType, icon: Orbit, label: 'XOR', key: '4' },
 ];
 
-export function ToolPalette({ selectedShape, selectedOp, onSelectShape, onSelectOp }: ToolPaletteProps) {
+export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }: ToolPaletteProps) {
   return (
     <div className="mt-auto flex justify-center pointer-events-auto">
       <div className="bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-3 flex gap-6 items-center">
-        {/* Primitives */}
+        {/* Primitives / Tools */}
         <div className="flex flex-col gap-2">
           <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter text-center">
-            Primitives
+            Tools
           </span>
           <div className="flex gap-2">
             {PRIMITIVES.map((tool) => {
-              const isActive = selectedShape === tool.id;
+              const isActive = activeTool === tool.id;
               const Icon = tool.icon;
               return (
                 <button
                   key={tool.id}
-                  onClick={() => onSelectShape(tool.id)}
+                  onClick={() => onSelectTool(tool.id)}
                   title={`${tool.label} (${tool.key})`}
-                  className={`p-3 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase min-w-[70px]
+                  className={`p-3 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase min-w-[65px]
                     ${
                       isActive
                         ? 'bg-black text-white border-black'

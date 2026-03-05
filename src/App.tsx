@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { ShapeType, OpType, ShapeObj } from './types/game';
+import type { ShapeType, OpType, ShapeObj, ToolMode } from './types/game';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useHistory } from './hooks/useHistory';
 import { LEVELS, CANVAS_SIZE, generateId } from './game/levels';
@@ -16,9 +16,9 @@ export default function App() {
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
-  const [selectedShape, setSelectedShape] = useState<ShapeType>('circle');
+  const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
-  const [activeShapeId, setActiveShapeId] = useState<string | null>(null);
+  const [activeShapeIds, setActiveShapeIds] = useState<string[]>([]);
   const [accuracy, setAccuracy] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
 
@@ -37,7 +37,7 @@ export default function App() {
         op: 'source-over',
       };
       setShapes([newShape]);
-      setActiveShapeId(newShape.id);
+      setActiveShapeIds([newShape.id]);
     }
     // Only run on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,11 +47,12 @@ export default function App() {
   const handleClear = useCallback(() => {
     snapshot();
     setShapes([]);
-    setActiveShapeId(null);
+    setActiveShapeIds([]);
   }, [setShapes, snapshot]);
 
   const handleFinalize = useCallback(() => {
-    if (accuracy >= 95.0) {
+    // WIN THRESHOLD LOWERED TO 90%
+    if (accuracy >= 90.0) {
       setIsWinModalOpen(true);
     } else {
       // Shake feedback
@@ -68,22 +69,17 @@ export default function App() {
     setCurrentLevel((prev) => prev + 1);
   }, [setShapes, setCurrentLevel]);
 
-  const handleSelectShape = useCallback((shape: ShapeType) => {
-    setSelectedShape(shape);
-    setActiveShapeId(null);
-  }, []);
-
   const handleSelectOp = useCallback(
     (op: OpType) => {
       setSelectedOp(op);
-      if (activeShapeId) {
+      if (activeShapeIds.length > 0) {
         snapshot();
         setShapes((prev) =>
-          prev.map((s) => (s.id === activeShapeId ? { ...s, op } : s))
+          prev.map((s) => (activeShapeIds.includes(s.id) ? { ...s, op } : s))
         );
       }
     },
-    [activeShapeId, setShapes, snapshot]
+    [activeShapeIds, setShapes, snapshot]
   );
 
   return (
@@ -98,9 +94,9 @@ export default function App() {
       <GameUI
         currentLevel={currentLevel}
         accuracy={accuracy}
-        selectedShape={selectedShape}
+        activeTool={activeTool}
         selectedOp={selectedOp}
-        onSelectShape={handleSelectShape}
+        onSelectTool={setActiveTool}
         onSelectOp={handleSelectOp}
         onClear={handleClear}
         onFinalize={handleFinalize}
@@ -111,12 +107,13 @@ export default function App() {
         shapes={shapes}
         setShapes={setShapes}
         currentLevel={currentLevel}
-        selectedShape={selectedShape}
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
         selectedOp={selectedOp}
-        activeShapeId={activeShapeId}
-        setActiveShapeId={setActiveShapeId}
+        activeShapeIds={activeShapeIds}
+        setActiveShapeIds={setActiveShapeIds}
         onAccuracyChange={setAccuracy}
-        onSelectShape={setSelectedShape}
+        onSelectTool={setActiveTool}
         onSelectOp={setSelectedOp}
         containerRef={containerRef}
         snapshot={snapshot}
