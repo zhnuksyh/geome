@@ -40,10 +40,10 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }
                   key={tool.id}
                   onClick={() => onSelectTool(tool.id)}
                   title={`${tool.label} (${tool.key})`}
-                  className={`p-3 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase min-w-[65px]
+                  className={`p-2 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${
                       isActive
-                        ? 'bg-black text-white border-black'
+                        ? 'bg-black text-white border-black translate-x-1 translate-y-1'
                         : 'bg-white border-black text-black hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
                     }`}
                 >
@@ -72,15 +72,15 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }
                   key={op.id}
                   onClick={() => onSelectOp(op.id)}
                   title={`${op.label} (${op.key})`}
-                  className={`p-3 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase min-w-[75px]
+                  className={`p-2 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${
                       isActive
-                        ? 'bg-black text-white border-black'
+                        ? 'bg-black text-white border-black translate-x-1 translate-y-1'
                         : 'bg-white border-black text-black hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
                     }`}
                 >
-                  <Icon className="w-5 h-5 mb-1" />
-                  <span>{op.label}</span>
+                  <Icon className="w-5 h-5 mb-1 shrink-0" />
+                  <span className="truncate w-full text-center">{op.label}</span>
                   <span className="text-[8px] opacity-50 mt-0.5">{op.key}</span>
                 </button>
               );

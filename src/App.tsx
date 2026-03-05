@@ -68,6 +68,13 @@ export default function App() {
     setCurrentLevel((prev) => prev + 1);
   }, [setShapes, setCurrentLevel]);
 
+  const handleSelectLevel = useCallback((levelIndex: number) => {
+    snapshot();
+    setShapes([]);
+    setActiveShapeIds([]);
+    setCurrentLevel(levelIndex);
+  }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot]);
+
   const handleSelectOp = useCallback(
     (op: OpType) => {
       setSelectedOp(op);
@@ -162,6 +169,7 @@ export default function App() {
         onSelectOp={handleSelectOp}
         onClear={handleClear}
         onFinalize={handleFinalize}
+        onSelectLevel={handleSelectLevel}
         onSelectShape={handleSelectShape}
         onMoveUp={handleMoveUpSelected}
         onMoveDown={handleMoveDownSelected}

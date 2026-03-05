@@ -16,6 +16,7 @@ interface GameUIProps {
   onSelectOp: (op: OpType) => void;
   onClear: () => void;
   onFinalize: () => void;
+  onSelectLevel: (levelIndex: number) => void;
   onSelectShape: (id: string, shiftKey: boolean) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -34,6 +35,7 @@ export function GameUI({
   onSelectOp,
   onClear,
   onFinalize,
+  onSelectLevel,
   onSelectShape,
   onMoveUp,
   onMoveDown,
@@ -45,7 +47,11 @@ export function GameUI({
       {/* Top Header */}
       <div className="flex justify-between items-start pointer-events-auto">
         {/* Status Panel */}
-        <ScorePanel currentLevel={currentLevel} accuracy={accuracy} />
+        <ScorePanel 
+          currentLevel={currentLevel} 
+          accuracy={accuracy} 
+          onSelectLevel={onSelectLevel} 
+        />
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3">
