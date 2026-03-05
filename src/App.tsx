@@ -10,6 +10,7 @@ import { WinModal } from './components/WinModal';
 export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
   const [currentLevel, setCurrentLevel] = useLocalStorage('geome_level', 0);
+  const [maxUnlockedLevel, setMaxUnlockedLevel] = useLocalStorage('geome_max_level', 0);
   const [shapes, setShapes] = useLocalStorage<ShapeObj[]>('geome_shapes', []);
 
   // ─── History (Undo / Redo) ─────────────────────────────────────────
@@ -53,6 +54,8 @@ export default function App() {
   const handleFinalize = useCallback(() => {
     if (accuracy >= 90.0) {
       setIsWinModalOpen(true);
+      // Unlock the next level if we beat the current peak
+      setMaxUnlockedLevel(prev => Math.max(prev, currentLevel + 1));
     } else {
       // Shake feedback
       if (containerRef.current) {
@@ -60,7 +63,7 @@ export default function App() {
         setTimeout(() => containerRef.current?.classList.remove('animate-shake'), 300);
       }
     }
-  }, [accuracy]);
+  }, [accuracy, currentLevel, setMaxUnlockedLevel]);
 
   const handleNextLevel = useCallback(() => {
     setIsWinModalOpen(false);
@@ -160,6 +163,7 @@ export default function App() {
       {/* UI Overlay */}
       <GameUI
         currentLevel={currentLevel}
+        maxUnlockedLevel={maxUnlockedLevel}
         accuracy={accuracy}
         activeTool={activeTool}
         selectedOp={selectedOp}

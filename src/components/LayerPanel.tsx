@@ -47,7 +47,7 @@ export function LayerPanel({
   if (shapes.length === 0) return null;
 
   return (
-    <div className="absolute left-8 top-48 flex flex-col pointer-events-auto bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-64 max-h-[calc(100vh-300px)]">
+    <div className="flex flex-col bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-[320px] max-h-[calc(100vh-320px)]">
       <div className="bg-black text-white p-2 text-center text-[10px] font-bold tracking-widest uppercase">
         Layers
       </div>
