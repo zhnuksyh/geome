@@ -9,16 +9,16 @@ interface ToolPaletteProps {
 }
 
 const PRIMITIVES = [
-  { id: 'circle' as ShapeType, icon: Circle, label: 'Circle' },
-  { id: 'square' as ShapeType, icon: Square, label: 'Square' },
-  { id: 'triangle' as ShapeType, icon: Triangle, label: 'Triangle' },
+  { id: 'circle' as ShapeType, icon: Circle, label: 'Circle', key: 'C' },
+  { id: 'square' as ShapeType, icon: Square, label: 'Square', key: 'S' },
+  { id: 'triangle' as ShapeType, icon: Triangle, label: 'Triangle', key: 'T' },
 ];
 
 const OPERATIONS = [
-  { id: 'source-over' as OpType, icon: Combine, label: 'Union' },
-  { id: 'destination-out' as OpType, icon: Minus, label: 'Subtract' },
-  { id: 'destination-in' as OpType, icon: Target, label: 'Intersect' },
-  { id: 'xor' as OpType, icon: Orbit, label: 'XOR' },
+  { id: 'source-over' as OpType, icon: Combine, label: 'Union', key: '1' },
+  { id: 'destination-out' as OpType, icon: Minus, label: 'Subtract', key: '2' },
+  { id: 'destination-in' as OpType, icon: Target, label: 'Intersect', key: '3' },
+  { id: 'xor' as OpType, icon: Orbit, label: 'XOR', key: '4' },
 ];
 
 export function ToolPalette({ selectedShape, selectedOp, onSelectShape, onSelectOp }: ToolPaletteProps) {
@@ -38,6 +38,7 @@ export function ToolPalette({ selectedShape, selectedOp, onSelectShape, onSelect
                 <button
                   key={tool.id}
                   onClick={() => onSelectShape(tool.id)}
+                  title={`${tool.label} (${tool.key})`}
                   className={`p-3 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase min-w-[70px]
                     ${
                       isActive
@@ -45,7 +46,9 @@ export function ToolPalette({ selectedShape, selectedOp, onSelectShape, onSelect
                         : 'bg-white border-black text-black hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
                     }`}
                 >
-                  <Icon className="w-5 h-5 mb-1" /> {tool.label}
+                  <Icon className="w-5 h-5 mb-1" />
+                  <span>{tool.label}</span>
+                  <span className="text-[8px] opacity-50 mt-0.5">{tool.key}</span>
                 </button>
               );
             })}
@@ -67,7 +70,7 @@ export function ToolPalette({ selectedShape, selectedOp, onSelectShape, onSelect
                 <button
                   key={op.id}
                   onClick={() => onSelectOp(op.id)}
-                  title={op.label}
+                  title={`${op.label} (${op.key})`}
                   className={`p-3 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase min-w-[75px]
                     ${
                       isActive
@@ -75,7 +78,9 @@ export function ToolPalette({ selectedShape, selectedOp, onSelectShape, onSelect
                         : 'bg-white border-black text-black hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
                     }`}
                 >
-                  <Icon className="w-5 h-5 mb-1" /> {op.label}
+                  <Icon className="w-5 h-5 mb-1" />
+                  <span>{op.label}</span>
+                  <span className="text-[8px] opacity-50 mt-0.5">{op.key}</span>
                 </button>
               );
             })}

@@ -16,14 +16,28 @@ Each level presents a **target shape** rendered as a faint ghost on the canvas. 
 - **XOR** — keep everything except the overlap
 
 ### Controls
-| Action | Input |
-|--------|-------|
-| Add / Select & Drag | Click on canvas |
-| Resize | Scroll wheel |
-| Rotate | Shift + Scroll wheel |
-| Reorder layers | `[` / `]` keys |
-| Delete shape | `Delete` / `Backspace` |
-| Clear canvas | `C` key |
+
+| Category | Shortcut | Action |
+|----------|----------|--------|
+| **Tools** | `V` | Select / Move (deselect tool) |
+| | `C` | Circle tool |
+| | `S` | Square tool |
+| | `T` | Triangle tool |
+| **Operations** | `1` | Union |
+| | `2` | Subtract |
+| | `3` | Intersect |
+| | `4` | XOR |
+| **Editing** | `Delete` / `Backspace` | Delete selected shape |
+| | `Ctrl+D` | Duplicate selected shape |
+| | `Ctrl+Z` | Undo |
+| | `Ctrl+Shift+Z` | Redo |
+| | `Escape` | Deselect |
+| **Canvas** | `Ctrl+Shift+X` | Clear entire canvas |
+| | Click | Add shape / Select & Drag |
+| **Transform** | Scroll | Resize selected shape |
+| | `Shift+Scroll` | Rotate selected shape |
+| **Layers** | `[` | Send backward |
+| | `]` | Bring forward |
 
 ## Tech Stack
 

@@ -14,6 +14,10 @@ interface CanvasWorkspaceProps {
   onSelectShape: (shape: ShapeType) => void;
   onSelectOp: (op: OpType) => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  snapshot: () => void;
+  undo: () => void;
+  redo: () => void;
+  onClear: () => void;
 }
 
 export function CanvasWorkspace({
@@ -28,6 +32,10 @@ export function CanvasWorkspace({
   onSelectShape,
   onSelectOp,
   containerRef,
+  snapshot,
+  undo,
+  redo,
+  onClear,
 }: CanvasWorkspaceProps) {
   const gameCanvasRef = useRef<HTMLCanvasElement>(null);
   const targetCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,7 +54,6 @@ export function CanvasWorkspace({
     const computeScale = () => {
       const parent = wrapper.parentElement;
       if (!parent) return;
-      // Compute how much space is available (accounting for padding)
       const availW = parent.clientWidth;
       const availH = parent.clientHeight;
       const newScale = Math.min(1, availW / (CANVAS_SIZE + 24), availH / (CANVAS_SIZE + 24));
@@ -77,7 +84,6 @@ export function CanvasWorkspace({
 
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    // Offscreen buffer for correct boolean compositing
     const buffer = document.createElement('canvas');
     buffer.width = CANVAS_SIZE;
     buffer.height = CANVAS_SIZE;
@@ -141,6 +147,7 @@ export function CanvasWorkspace({
 
   // ─── Pointer events ────────────────────────────────────────────────
   const handleAddShape = (x: number, y: number) => {
+    snapshot();
     const newShape: ShapeObj = {
       id: generateId(),
       type: selectedShape,
@@ -158,7 +165,6 @@ export function CanvasWorkspace({
     const canvas = gameCanvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    // Convert from CSS-space to the 600x600 logical space
     return {
       x: ((clientX - rect.left) / rect.width) * CANVAS_SIZE,
       y: ((clientY - rect.top) / rect.height) * CANVAS_SIZE,
@@ -218,6 +224,9 @@ export function CanvasWorkspace({
   };
 
   const handlePointerUp = () => {
+    if (isDraggingRef.current) {
+      snapshot(); // Record drag result
+    }
     isDraggingRef.current = false;
     calculateAccuracy();
   };
@@ -227,9 +236,18 @@ export function CanvasWorkspace({
     const canvas = gameCanvasRef.current;
     if (!canvas) return;
 
+    let wheelSnapshotted = false;
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
       if (activeShapeIndex !== -1) {
+        if (!wheelSnapshotted) {
+          snapshot();
+          wheelSnapshotted = true;
+          // Reset after a pause in scrolling
+          setTimeout(() => { wheelSnapshotted = false; }, 300);
+        }
+
         setShapes((prev) => {
           const newShapes = [...prev];
           const activeShape = { ...newShapes[activeShapeIndex] };
@@ -250,30 +268,150 @@ export function CanvasWorkspace({
 
     canvas.addEventListener('wheel', handleWheel, { passive: false });
     return () => canvas.removeEventListener('wheel', handleWheel);
-  }, [activeShapeIndex, calculateAccuracy, setShapes]);
+  }, [activeShapeIndex, calculateAccuracy, setShapes, snapshot]);
 
-  // ─── Keyboard shortcuts ────────────────────────────────────────────
+  // ─── Keyboard shortcuts (Affinity-inspired) ────────────────────────
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
+      const ctrl = e.ctrlKey || e.metaKey;
+      const shift = e.shiftKey;
 
-      if (key === 'c') {
-        setShapes([]);
-        setActiveShapeId(null);
-        setTimeout(calculateAccuracy, 10);
+      // ── Modifier combos first ──────────────────────────────────
+      if (ctrl) {
+        // Ctrl+Z = Undo
+        if (key === 'z' && !shift) {
+          e.preventDefault();
+          undo();
+          setTimeout(calculateAccuracy, 10);
+          return;
+        }
+        // Ctrl+Shift+Z = Redo
+        if (key === 'z' && shift) {
+          e.preventDefault();
+          redo();
+          setTimeout(calculateAccuracy, 10);
+          return;
+        }
+        // Ctrl+D = Duplicate selected shape
+        if (key === 'd') {
+          e.preventDefault();
+          if (activeShapeId) {
+            const source = shapes.find((s) => s.id === activeShapeId);
+            if (source) {
+              snapshot();
+              const dup: ShapeObj = {
+                ...source,
+                id: generateId(),
+                x: source.x + 20,
+                y: source.y + 20,
+              };
+              setShapes((prev) => [...prev, dup]);
+              setActiveShapeId(dup.id);
+              setTimeout(calculateAccuracy, 10);
+            }
+          }
+          return;
+        }
+        // Ctrl+Shift+X = Clear canvas
+        if (key === 'x' && shift) {
+          e.preventDefault();
+          onClear();
+          setTimeout(calculateAccuracy, 10);
+          return;
+        }
+        // Don't intercept other Ctrl combos
+        return;
       }
 
+      // ── Single-key shortcuts (no Ctrl) ─────────────────────────
+
+      // Escape = Deselect
+      if (e.key === 'Escape') {
+        setActiveShapeId(null);
+        return;
+      }
+
+      // Delete / Backspace = Delete selected shape
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (e.key === 'Backspace') e.preventDefault();
         if (activeShapeId) {
+          snapshot();
           setShapes((prev) => prev.filter((s) => s.id !== activeShapeId));
           setActiveShapeId(null);
           setTimeout(calculateAccuracy, 10);
         }
+        return;
       }
 
+      // Tool selection: V / C / S / T
+      if (key === 'v') {
+        setActiveShapeId(null);
+        return;
+      }
+      if (key === 'c') {
+        onSelectShape('circle');
+        return;
+      }
+      if (key === 's') {
+        onSelectShape('square');
+        return;
+      }
+      if (key === 't') {
+        onSelectShape('triangle');
+        return;
+      }
+
+      // Boolean operations: 1 / 2 / 3 / 4
+      if (key === '1') {
+        onSelectOp('source-over');
+        if (activeShapeId) {
+          snapshot();
+          setShapes((prev) =>
+            prev.map((s) => (s.id === activeShapeId ? { ...s, op: 'source-over' as OpType } : s))
+          );
+          setTimeout(calculateAccuracy, 10);
+        }
+        return;
+      }
+      if (key === '2') {
+        onSelectOp('destination-out');
+        if (activeShapeId) {
+          snapshot();
+          setShapes((prev) =>
+            prev.map((s) => (s.id === activeShapeId ? { ...s, op: 'destination-out' as OpType } : s))
+          );
+          setTimeout(calculateAccuracy, 10);
+        }
+        return;
+      }
+      if (key === '3') {
+        onSelectOp('destination-in');
+        if (activeShapeId) {
+          snapshot();
+          setShapes((prev) =>
+            prev.map((s) => (s.id === activeShapeId ? { ...s, op: 'destination-in' as OpType } : s))
+          );
+          setTimeout(calculateAccuracy, 10);
+        }
+        return;
+      }
+      if (key === '4') {
+        onSelectOp('xor');
+        if (activeShapeId) {
+          snapshot();
+          setShapes((prev) =>
+            prev.map((s) => (s.id === activeShapeId ? { ...s, op: 'xor' as OpType } : s))
+          );
+          setTimeout(calculateAccuracy, 10);
+        }
+        return;
+      }
+
+      // Layer ordering: [ backward, ] forward
       if (key === '[' || key === ']') {
         if (activeShapeIndex === -1) return;
+        snapshot();
         setShapes((prev) => {
           const newShapes = [...prev];
           if (key === '[' && activeShapeIndex > 0) {
@@ -290,12 +428,26 @@ export function CanvasWorkspace({
           return newShapes;
         });
         setTimeout(calculateAccuracy, 10);
+        return;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeShapeId, activeShapeIndex, calculateAccuracy, setShapes, setActiveShapeId]);
+  }, [
+    activeShapeId,
+    activeShapeIndex,
+    calculateAccuracy,
+    setShapes,
+    setActiveShapeId,
+    onSelectShape,
+    onSelectOp,
+    snapshot,
+    undo,
+    redo,
+    onClear,
+    shapes,
+  ]);
 
   return (
     <div className="flex items-center justify-center flex-1 min-h-0 min-w-0 p-4">

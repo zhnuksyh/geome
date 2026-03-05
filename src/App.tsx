@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { ShapeType, OpType, ShapeObj } from './types/game';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { useHistory } from './hooks/useHistory';
 import { LEVELS, CANVAS_SIZE, generateId } from './game/levels';
 import { GameUI } from './components/GameUI';
 import { CanvasWorkspace } from './components/CanvasWorkspace';
@@ -10,6 +11,9 @@ export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
   const [currentLevel, setCurrentLevel] = useLocalStorage('geome_level', 0);
   const [shapes, setShapes] = useLocalStorage<ShapeObj[]>('geome_shapes', []);
+
+  // ─── History (Undo / Redo) ─────────────────────────────────────────
+  const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
   const [selectedShape, setSelectedShape] = useState<ShapeType>('circle');
@@ -41,9 +45,10 @@ export default function App() {
 
   // ─── Game Actions ──────────────────────────────────────────────────
   const handleClear = useCallback(() => {
+    snapshot();
     setShapes([]);
     setActiveShapeId(null);
-  }, [setShapes]);
+  }, [setShapes, snapshot]);
 
   const handleFinalize = useCallback(() => {
     if (accuracy >= 95.0) {
@@ -72,12 +77,13 @@ export default function App() {
     (op: OpType) => {
       setSelectedOp(op);
       if (activeShapeId) {
+        snapshot();
         setShapes((prev) =>
           prev.map((s) => (s.id === activeShapeId ? { ...s, op } : s))
         );
       }
     },
-    [activeShapeId, setShapes]
+    [activeShapeId, setShapes, snapshot]
   );
 
   return (
@@ -113,6 +119,10 @@ export default function App() {
         onSelectShape={setSelectedShape}
         onSelectOp={setSelectedOp}
         containerRef={containerRef}
+        snapshot={snapshot}
+        undo={undo}
+        redo={redo}
+        onClear={handleClear}
       />
 
       {/* Win Modal */}

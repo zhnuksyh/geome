@@ -1,4 +1,4 @@
-import { Orbit, Layers, RotateCw, Trash2 } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -46,7 +46,7 @@ export function GameUI({
             onClick={onClear}
             className="self-end text-[10px] font-bold uppercase tracking-widest hover:text-[#E63946]"
           >
-            Clear Canvas [C]
+            Clear Canvas [Ctrl+Shift+X]
           </Button>
         </div>
       </div>
@@ -54,6 +54,12 @@ export function GameUI({
       {/* Instructions Panel (Right Side) */}
       <div className="absolute right-8 top-48 flex flex-col gap-3 text-right">
         <div className="text-[10px] leading-relaxed text-gray-400 uppercase font-bold">
+          <p className="flex items-center justify-end gap-2 mb-1">
+            <Keyboard size={12} /> V Select · C S T Tools
+          </p>
+          <p className="flex items-center justify-end gap-2 mb-1">
+            <Keyboard size={12} /> 1 2 3 4 Operations
+          </p>
           <p className="flex items-center justify-end gap-2 mb-1">
             <Orbit size={12} /> Click to Add/Drag
           </p>
@@ -64,10 +70,16 @@ export function GameUI({
             <RotateCw size={12} /> Shift+Scroll to Rotate
           </p>
           <p className="flex items-center justify-end gap-2 mb-1">
-            <Layers size={12} /> [ or ] to Reorder Layers
+            <Layers size={12} /> [ ] Reorder Layers
+          </p>
+          <p className="flex items-center justify-end gap-2 mb-1">
+            <Copy size={12} /> Ctrl+D Duplicate
+          </p>
+          <p className="flex items-center justify-end gap-2 mb-1">
+            <Undo2 size={12} /> Ctrl+Z / Ctrl+Shift+Z
           </p>
           <p className="flex items-center justify-end gap-2">
-            <Trash2 size={12} /> Del to Remove
+            <Trash2 size={12} /> Del to Remove · Esc Deselect
           </p>
         </div>
       </div>
