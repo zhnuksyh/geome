@@ -96,8 +96,10 @@ export function CanvasWorkspace({
     const bCtx = buffer.getContext('2d');
     if (!bCtx) return;
 
-    shapes.forEach((s) => {
-      drawShape(bCtx, s.type, s.op, s.x, s.y, s.size, s.rotation, "black");
+    shapes.forEach((s, index) => {
+      // Force the very first shape to always be source-over so it's never invisible
+      const actualOp = index === 0 ? 'source-over' : s.op;
+      drawShape(bCtx, s.type, actualOp, s.x, s.y, s.size, s.rotation, "black");
     });
 
     ctx.drawImage(buffer, 0, 0);
@@ -133,10 +135,6 @@ export function CanvasWorkspace({
 
   }, [shapes, activeShapeIds, selectionBox]);
 
-  useEffect(() => {
-    renderGameCanvas();
-  }, [renderGameCanvas]);
-
   // ─── Accuracy (IoU) ────────────────────────────────────────────────
   const calculateAccuracy = useCallback(() => {
     const ctx = gameCanvasRef.current?.getContext('2d', { willReadFrequently: true });
@@ -158,6 +156,14 @@ export function CanvasWorkspace({
 
     onAccuracyChange(union === 0 ? 0 : (intersection / union) * 100);
   }, [onAccuracyChange]);
+
+  useEffect(() => {
+    renderGameCanvas();
+    const timer = setTimeout(() => {
+      calculateAccuracy();
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [renderGameCanvas, calculateAccuracy]);
 
   // ─── Pointer events ────────────────────────────────────────────────
   const handleAddShape = (type: 'circle' | 'square' | 'triangle', x: number, y: number) => {
@@ -391,8 +397,8 @@ export function CanvasWorkspace({
       const shift = e.shiftKey;
 
       if (ctrl) {
-        if (key === 'z' && !shift) { e.preventDefault(); undo(); setTimeout(calculateAccuracy, 10); return; }
-        if (key === 'z' && shift) { e.preventDefault(); redo(); setTimeout(calculateAccuracy, 10); return; }
+        if (key === 'z' && !shift) { e.preventDefault(); undo(); return; }
+        if (key === 'z' && shift) { e.preventDefault(); redo(); return; }
         if (key === 'd') {
           e.preventDefault();
           if (activeShapeIds.length > 0) {
@@ -408,11 +414,10 @@ export function CanvasWorkspace({
               return [...prev, ...dups];
             });
             setActiveShapeIds(newIds);
-            setTimeout(calculateAccuracy, 10);
           }
           return;
         }
-        if (key === 'x' && shift) { e.preventDefault(); onClear(); setTimeout(calculateAccuracy, 10); return; }
+        if (key === 'x' && shift) { e.preventDefault(); onClear(); return; }
         return;
       }
 
@@ -424,7 +429,6 @@ export function CanvasWorkspace({
           snapshot();
           setShapes((prev) => prev.filter((s) => !activeShapeIds.includes(s.id)));
           setActiveShapeIds([]);
-          setTimeout(calculateAccuracy, 10);
         }
         return;
       }
@@ -441,7 +445,6 @@ export function CanvasWorkspace({
           setShapes((prev) =>
             prev.map((s) => (activeShapeIds.includes(s.id) ? { ...s, op } : s))
           );
-          setTimeout(calculateAccuracy, 10);
         }
       };
 
@@ -466,7 +469,6 @@ export function CanvasWorkspace({
               return newShapes;
             });
         }
-        setTimeout(calculateAccuracy, 10);
         return;
       }
     };

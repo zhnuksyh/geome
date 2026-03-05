@@ -2,17 +2,25 @@ import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard } from 'lucide-r
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
-import type { ToolMode, OpType } from '../types/game';
+import { LayerPanel } from './LayerPanel';
+import type { ToolMode, OpType, ShapeObj } from '../types/game';
 
 interface GameUIProps {
   currentLevel: number;
   accuracy: number;
   activeTool: ToolMode;
   selectedOp: OpType;
+  shapes: ShapeObj[];
+  activeShapeIds: string[];
   onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
   onClear: () => void;
   onFinalize: () => void;
+  onSelectShape: (id: string, shiftKey: boolean) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
 }
 
 export function GameUI({
@@ -20,10 +28,17 @@ export function GameUI({
   accuracy,
   activeTool,
   selectedOp,
+  shapes,
+  activeShapeIds,
   onSelectTool,
   onSelectOp,
   onClear,
   onFinalize,
+  onSelectShape,
+  onMoveUp,
+  onMoveDown,
+  onDuplicate,
+  onDelete,
 }: GameUIProps) {
   return (
     <div className="fixed inset-0 z-10 flex flex-col p-8 pointer-events-none">
@@ -50,6 +65,17 @@ export function GameUI({
           </Button>
         </div>
       </div>
+
+      {/* Layer Panel (Left Side) */}
+      <LayerPanel 
+        shapes={shapes}
+        activeShapeIds={activeShapeIds}
+        onSelectShape={onSelectShape}
+        onMoveUp={onMoveUp}
+        onMoveDown={onMoveDown}
+        onDuplicate={onDuplicate}
+        onDelete={onDelete}
+      />
 
       {/* Instructions Panel (Right Side) */}
       <div className="absolute right-8 top-48 flex flex-col gap-3 text-right">

@@ -51,7 +51,6 @@ export default function App() {
   }, [setShapes, snapshot]);
 
   const handleFinalize = useCallback(() => {
-    // WIN THRESHOLD LOWERED TO 90%
     if (accuracy >= 90.0) {
       setIsWinModalOpen(true);
     } else {
@@ -81,6 +80,67 @@ export default function App() {
     },
     [activeShapeIds, setShapes, snapshot]
   );
+  
+  // ─── Shape Panel Actions ───────────────────────────────────────────
+  const handleSelectShape = useCallback((id: string, shiftKey: boolean) => {
+    setActiveShapeIds(prev => {
+      if (shiftKey) {
+        return prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+      }
+      return [id];
+    });
+  }, []);
+
+  const handleMoveUpSelected = useCallback(() => {
+    if (activeShapeIds.length !== 1) return;
+    snapshot();
+    setShapes(prev => {
+      const idx = prev.findIndex(s => s.id === activeShapeIds[0]);
+      if (idx < prev.length - 1) {
+        const next = [...prev];
+        [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+        return next;
+      }
+      return prev;
+    });
+  }, [activeShapeIds, setShapes, snapshot]);
+
+  const handleMoveDownSelected = useCallback(() => {
+    if (activeShapeIds.length !== 1) return;
+    snapshot();
+    setShapes(prev => {
+      const idx = prev.findIndex(s => s.id === activeShapeIds[0]);
+      if (idx > 0) {
+        const next = [...prev];
+        [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+        return next;
+      }
+      return prev;
+    });
+  }, [activeShapeIds, setShapes, snapshot]);
+
+  const handleDuplicateSelected = useCallback(() => {
+    if (activeShapeIds.length === 0) return;
+    snapshot();
+    const newIds: string[] = [];
+    setShapes(prev => {
+      const shapesToDup = prev.filter(s => activeShapeIds.includes(s.id));
+      const dups = shapesToDup.map(s => {
+        const newShape = { ...s, id: generateId(), x: s.x + 20, y: s.y + 20 };
+        newIds.push(newShape.id);
+        return newShape;
+      });
+      return [...prev, ...dups];
+    });
+    setActiveShapeIds(newIds);
+  }, [activeShapeIds, setShapes, snapshot]);
+
+  const handleDeleteSelected = useCallback(() => {
+    if (activeShapeIds.length === 0) return;
+    snapshot();
+    setShapes(prev => prev.filter(s => !activeShapeIds.includes(s.id)));
+    setActiveShapeIds([]);
+  }, [activeShapeIds, setShapes, snapshot]);
 
   return (
     <div
@@ -96,10 +156,17 @@ export default function App() {
         accuracy={accuracy}
         activeTool={activeTool}
         selectedOp={selectedOp}
+        shapes={shapes}
+        activeShapeIds={activeShapeIds}
         onSelectTool={setActiveTool}
         onSelectOp={handleSelectOp}
         onClear={handleClear}
         onFinalize={handleFinalize}
+        onSelectShape={handleSelectShape}
+        onMoveUp={handleMoveUpSelected}
+        onMoveDown={handleMoveDownSelected}
+        onDuplicate={handleDuplicateSelected}
+        onDelete={handleDeleteSelected}
       />
 
       {/* Canvas Workspace */}
