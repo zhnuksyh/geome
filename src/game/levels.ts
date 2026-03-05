@@ -48,27 +48,26 @@ export const drawShape = (
     ctx.restore();
 };
 
-/** Game level definitions. Kept as target shapes so we can enable distance-based snapping. */
 export const LEVELS: LevelDef[] = [
     {
         title: "Vesica Piscis",
         targetShapes: [
-            { type: 'circle', op: 'source-over', x: 250, y: 300, size: 100, rotation: 0 },
-            { type: 'circle', op: 'destination-in', x: 350, y: 300, size: 100, rotation: 0 }
+            { type: 'circle', op: 'source-over', x: 260, y: 300, size: 100, rotation: 0 },
+            { type: 'circle', op: 'destination-in', x: 340, y: 300, size: 100, rotation: 0 }
         ]
     },
     {
         title: "Lunar Subtract",
         targetShapes: [
-            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 130, rotation: 0 },
-            { type: 'circle', op: 'destination-out', x: 360, y: 260, size: 110, rotation: 0 }
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 120, rotation: 0 },
+            { type: 'circle', op: 'destination-out', x: 340, y: 260, size: 100, rotation: 0 }
         ]
     },
     {
         title: "The XOR Eye",
         targetShapes: [
             { type: 'square', op: 'source-over', x: 300, y: 300, size: 120, rotation: Math.PI / 4 },
-            { type: 'circle', op: 'xor', x: 300, y: 300, size: 90, rotation: 0 }
+            { type: 'circle', op: 'xor', x: 300, y: 300, size: 80, rotation: 0 }
         ]
     },
     {

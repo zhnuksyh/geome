@@ -19,6 +19,8 @@ interface CanvasWorkspaceProps {
   undo: () => void;
   redo: () => void;
   onClear: () => void;
+  showGrid: boolean;
+  setShowGrid: (val: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export function CanvasWorkspace({
@@ -38,6 +40,8 @@ export function CanvasWorkspace({
   undo,
   redo,
   onClear,
+  showGrid,
+  setShowGrid,
 }: CanvasWorkspaceProps) {
   const gameCanvasRef = useRef<HTMLCanvasElement>(null);
   const targetCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -104,6 +108,23 @@ export function CanvasWorkspace({
 
     ctx.drawImage(buffer, 0, 0);
 
+    // Draw Grid overlay if toggled
+    if (showGrid) {
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 4]); // Dotted grid
+      ctx.beginPath();
+      // Draw 20px interval lines
+      for (let i = 0; i <= CANVAS_SIZE; i += 20) {
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, CANVAS_SIZE);
+        ctx.moveTo(0, i);
+        ctx.lineTo(CANVAS_SIZE, i);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
     // Selection outlines for all active shapes
     activeShapeIds.forEach((id) => {
       const s = shapes.find(shape => shape.id === id);
@@ -133,7 +154,7 @@ export function CanvasWorkspace({
       ctx.setLineDash([]);
     }
 
-  }, [shapes, activeShapeIds, selectionBox]);
+  }, [shapes, activeShapeIds, selectionBox, showGrid]);
 
   // ─── Accuracy (IoU) ────────────────────────────────────────────────
   const calculateAccuracy = useCallback(() => {
@@ -301,7 +322,16 @@ export function CanvasWorkspace({
       setShapes((prev) =>
         prev.map((s) => {
           if (activeShapeIds.includes(s.id)) {
-            return { ...s, x: s.x + dx + snapDx, y: s.y + dy + snapDy };
+            let finalX = s.x + dx + snapDx;
+            let finalY = s.y + dy + snapDy;
+            
+            // If grid snapping is on, strictly bind to 20px grid
+            if (showGrid) {
+              finalX = Math.round(finalX / 20) * 20;
+              finalY = Math.round(finalY / 20) * 20;
+            }
+
+            return { ...s, x: finalX, y: finalY };
           }
           return s;
         })
@@ -371,9 +401,17 @@ export function CanvasWorkspace({
             if (activeShapeIds.includes(s.id)) {
               const activeShape = { ...s };
               if (e.shiftKey) {
-                activeShape.rotation += e.deltaY > 0 ? 0.08 : -0.08;
+                if (showGrid) {
+                  // Snap to 15 degree increments
+                  const snapAngle = Math.PI / 12; 
+                  const dir = e.deltaY > 0 ? 1 : -1;
+                  activeShape.rotation += dir * snapAngle;
+                } else {
+                  activeShape.rotation += e.deltaY > 0 ? 0.08 : -0.08;
+                }
               } else {
-                const delta = e.deltaY > 0 ? -4 : 4;
+                // If grid is active, snap radius to 10 to lock onto 20 grid width
+                const delta = e.deltaY > 0 ? (showGrid ? -10 : -4) : (showGrid ? 10 : 4);
                 activeShape.size = Math.max(10, activeShape.size + delta);
               }
               return activeShape;
@@ -387,7 +425,7 @@ export function CanvasWorkspace({
 
     canvas.addEventListener('wheel', handleWheel, { passive: false });
     return () => canvas.removeEventListener('wheel', handleWheel);
-  }, [activeShapeIds, calculateAccuracy, setShapes, snapshot]);
+  }, [activeShapeIds, calculateAccuracy, setShapes, snapshot, showGrid]);
 
   // ─── Keyboard shortcuts (Affinity-inspired) ────────────────────────
   useEffect(() => {
@@ -437,6 +475,7 @@ export function CanvasWorkspace({
       if (key === 'c') { onSelectTool('circle'); return; }
       if (key === 's') { onSelectTool('square'); return; }
       if (key === 't') { onSelectTool('triangle'); return; }
+      if (key === 'g') { setShowGrid(prev => !prev); return; }
 
       const applyOp = (op: OpType) => {
         onSelectOp(op);
@@ -477,7 +516,7 @@ export function CanvasWorkspace({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     activeShapeIds, calculateAccuracy, setShapes, setActiveShapeIds, onSelectTool, onSelectOp,
-    snapshot, undo, redo, onClear, shapes, setActiveTool
+    snapshot, undo, redo, onClear, shapes, setActiveTool, setShowGrid
   ]);
 
   return (

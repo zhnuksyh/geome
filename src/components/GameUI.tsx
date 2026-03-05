@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -11,6 +11,7 @@ interface GameUIProps {
   currentLevel: number;
   maxUnlockedLevel: number;
   accuracy: number;
+  showGrid: boolean;
   activeTool: ToolMode;
   selectedOp: OpType;
   shapes: ShapeObj[];
@@ -25,12 +26,14 @@ interface GameUIProps {
   onMoveDown: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  onToggleGrid: () => void;
 }
 
 export function GameUI({
   currentLevel,
   maxUnlockedLevel,
   accuracy,
+  showGrid,
   activeTool,
   selectedOp,
   shapes,
@@ -45,6 +48,7 @@ export function GameUI({
   onMoveDown,
   onDuplicate,
   onDelete,
+  onToggleGrid,
 }: GameUIProps) {
   const [isLevelSelectOpen, setIsLevelSelectOpen] = useState(false);
 
@@ -79,31 +83,44 @@ export function GameUI({
 
           {/* Right Column (Actions + Instructions) */}
           <div className="flex flex-col gap-6 items-end pointer-events-auto">
-            <div className="flex flex-col gap-3">
-              <button onClick={onFinalize} className="relative group block pointer-events-auto">
+            <div className="flex flex-col gap-3 w-[260px]">
+              <button onClick={onFinalize} className="relative group block pointer-events-auto w-full">
                 <div className="absolute inset-0 bg-black translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
                 <div className="relative bg-[#E63946] text-white border-2 border-black px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5">
                   Finalize Form
                 </div>
               </button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClear}
-                className="self-end text-[10px] font-bold uppercase tracking-widest hover:text-[#E63946]"
-              >
-                Clear Canvas [Ctrl+Shift+X]
-              </Button>
+              <div className="flex justify-between w-full mt-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onToggleGrid}
+                  className={`text-[10px] font-bold uppercase tracking-widest ${showGrid ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100`}
+                >
+                  {showGrid ? "[G] GRID ON" : "[G] GRID OFF"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClear}
+                  className="text-[10px] font-bold uppercase tracking-widest hover:text-[#E63946]"
+                >
+                  Clear All
+                </Button>
+              </div>
             </div>
 
             {/* Instructions Panel */}
-            <div className="flex flex-col gap-3 text-right">
+            <div className="flex flex-col gap-3 text-right mt-2">
               <div className="text-[10px] leading-relaxed text-gray-400 uppercase font-bold">
                 <p className="flex items-center justify-end gap-2 mb-1">
                   <Keyboard size={12} /> V Select · C S T Tools
                 </p>
                 <p className="flex items-center justify-end gap-2 mb-1">
                   <Keyboard size={12} /> 1 2 3 4 Operations
+                </p>
+                <p className="flex items-center justify-end gap-2 mb-1">
+                  <Grid size={12} /> G Toggle Snap Grid
                 </p>
                 <p className="flex items-center justify-end gap-2 mb-1">
                   <Orbit size={12} /> Drag to Select/Move

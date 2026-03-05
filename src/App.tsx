@@ -12,6 +12,7 @@ export default function App() {
   const [currentLevel, setCurrentLevel] = useLocalStorage('geome_level', 0);
   const [maxUnlockedLevel, setMaxUnlockedLevel] = useLocalStorage('geome_max_level', 0);
   const [shapes, setShapes] = useLocalStorage<ShapeObj[]>('geome_shapes', []);
+  const [showGrid, setShowGrid] = useLocalStorage('geome_grid', false);
 
   // ─── History (Undo / Redo) ─────────────────────────────────────────
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
@@ -165,6 +166,7 @@ export default function App() {
         currentLevel={currentLevel}
         maxUnlockedLevel={maxUnlockedLevel}
         accuracy={accuracy}
+        showGrid={showGrid}
         activeTool={activeTool}
         selectedOp={selectedOp}
         shapes={shapes}
@@ -179,6 +181,7 @@ export default function App() {
         onMoveDown={handleMoveDownSelected}
         onDuplicate={handleDuplicateSelected}
         onDelete={handleDeleteSelected}
+        onToggleGrid={() => setShowGrid(!showGrid)}
       />
 
       {/* Canvas Workspace */}
@@ -186,6 +189,8 @@ export default function App() {
         shapes={shapes}
         setShapes={setShapes}
         currentLevel={currentLevel}
+        showGrid={showGrid}
+        setShowGrid={setShowGrid}
         activeTool={activeTool}
         setActiveTool={setActiveTool}
         selectedOp={selectedOp}
