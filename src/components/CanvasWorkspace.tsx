@@ -48,6 +48,7 @@ export function CanvasWorkspace({
   const isDraggingShapesRef = useRef(false);
   const [selectionBox, setSelectionBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
+  const originalShapesRef = useRef<Map<string, { x: number; y: number }>>(new Map());
   const lastCalcTimeRef = useRef(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -114,8 +115,8 @@ export function CanvasWorkspace({
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 4]); // Dotted grid
       ctx.beginPath();
-      // Draw 20px interval lines
-      for (let i = 0; i <= CANVAS_SIZE; i += 20) {
+      // Draw 40px interval lines offset by 20px to perfectly center on 600px surface (300 center)
+      for (let i = 20; i <= CANVAS_SIZE; i += 40) {
         ctx.moveTo(i, 0);
         ctx.lineTo(i, CANVAS_SIZE);
         ctx.moveTo(0, i);
@@ -272,6 +273,11 @@ export function CanvasWorkspace({
       }
       isDraggingShapesRef.current = true;
       dragStartPosRef.current = { x: mouseX, y: mouseY };
+      
+      // Snapshot shapes immediately so continuous dragging scales fluidly directly from these exact origins
+      const newOrig = new Map<string, { x: number; y: number }>();
+      shapes.forEach(s => newOrig.set(s.id, { x: s.x, y: s.y }));
+      originalShapesRef.current = newOrig;
     } else {
       // Clicked empty space
       if (!e.shiftKey) setActiveShapeIds([]); // Clear selection unless shift is held
@@ -322,13 +328,16 @@ export function CanvasWorkspace({
       setShapes((prev) =>
         prev.map((s) => {
           if (activeShapeIds.includes(s.id)) {
-            let finalX = s.x + dx + snapDx;
-            let finalY = s.y + dy + snapDy;
+            const orig = originalShapesRef.current.get(s.id);
+            if (!orig) return s;
+
+            let finalX = orig.x + dx + snapDx;
+            let finalY = orig.y + dy + snapDy;
             
-            // If grid snapping is on, strictly bind to 20px grid
+            // If grid snapping is on, strictly bind to 40px grid (offset by 20px)
             if (showGrid) {
-              finalX = Math.round(finalX / 20) * 20;
-              finalY = Math.round(finalY / 20) * 20;
+              finalX = Math.round((finalX - 20) / 40) * 40 + 20;
+              finalY = Math.round((finalY - 20) / 40) * 40 + 20;
             }
 
             return { ...s, x: finalX, y: finalY };
@@ -410,9 +419,9 @@ export function CanvasWorkspace({
                   activeShape.rotation += e.deltaY > 0 ? 0.08 : -0.08;
                 }
               } else {
-                // If grid is active, snap radius to 10 to lock onto 20 grid width
-                const delta = e.deltaY > 0 ? (showGrid ? -10 : -4) : (showGrid ? 10 : 4);
-                activeShape.size = Math.max(10, activeShape.size + delta);
+                // If grid is active, snap radius to 20 to lock onto 40 grid width
+                const delta = e.deltaY > 0 ? (showGrid ? -20 : -4) : (showGrid ? 20 : 4);
+                activeShape.size = Math.max(20, activeShape.size + delta);
               }
               return activeShape;
             }

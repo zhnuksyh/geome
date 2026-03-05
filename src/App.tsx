@@ -34,7 +34,7 @@ export default function App() {
         type: 'circle',
         x: CANVAS_SIZE / 2,
         y: CANVAS_SIZE / 2,
-        size: 90,
+        size: 100,
         rotation: 0,
         op: 'source-over',
       };

@@ -74,7 +74,7 @@ export const LEVELS: LevelDef[] = [
         title: "Constructivist Gate",
         targetShapes: [
             { type: 'square', op: 'source-over', x: 300, y: 300, size: 140, rotation: 0 },
-            { type: 'triangle', op: 'source-over', x: 300, y: 160, size: 140, rotation: 0 },
+            { type: 'triangle', op: 'source-over', x: 300, y: 140, size: 140, rotation: 0 },
             { type: 'circle', op: 'destination-out', x: 300, y: 340, size: 80, rotation: 0 }
         ]
     }
