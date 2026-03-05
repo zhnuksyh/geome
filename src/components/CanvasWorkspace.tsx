@@ -183,7 +183,7 @@ export function CanvasWorkspace({
 
     setShapes((prev) => [...prev, newShape]);
     setActiveShapeIds([newShape.id]);
-    setActiveTool('select'); // Automatically revert to select tool after dropping
+    // Removed automatic tool revert to allow dropping multiple shapes
   };
 
   const toCanvasCoords = (clientX: number, clientY: number) => {
@@ -502,7 +502,8 @@ export function CanvasWorkspace({
               ref={gameCanvasRef}
               width={CANVAS_SIZE}
               height={CANVAS_SIZE}
-              className="absolute cursor-crosshair touch-none"
+              className="absolute touch-none"
+              style={{ cursor: "url('/cursor-crosshair.svg') 12 12, crosshair" }}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}

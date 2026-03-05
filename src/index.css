@@ -8,14 +8,27 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f8f8;
+  color: #111827;
+  cursor: url('/cursor-pointer.svg') 4 4, auto !important;
 }
 
 /* ─── Shake Animation ────────────────────────────────────────────── */
 
 @keyframes shake {
-  0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(-5px, 0); }
-  75% { transform: translate(5px, 0); }
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-5px, 0);
+  }
+
+  75% {
+    transform: translate(5px, 0);
+  }
 }
 
 .animate-shake {
