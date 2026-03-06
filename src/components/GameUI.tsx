@@ -15,6 +15,7 @@ interface GameUIProps {
   moves: number;
   timeElapsed: number;
   showGrid: boolean;
+  allowedTools: ShapeType[];
   activeTool: ToolMode;
   selectedOp: OpType;
   shapes: ShapeObj[];
@@ -44,6 +45,7 @@ export function GameUI({
   moves,
   timeElapsed,
   showGrid,
+  allowedTools,
   activeTool,
   selectedOp,
   shapes,
@@ -130,7 +132,7 @@ export function GameUI({
                 <div className="flex justify-between w-full items-end gap-4">
                   <div className="flex flex-col text-left">
                     <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase tracking-widest leading-none mb-1">Action Par</span>
-                    <div className="flex gap-2 text-[10px] font-mono font-bold tracking-tighter leading-none">
+                    <div className="flex gap-3 text-sm font-mono font-bold tracking-tighter leading-none mt-1">
                       <span className="text-[var(--accent-yellow)]">G:{gold}</span>
                       <span className="text-[#A8AADC]">S:{silver}</span>
                       <span className="text-[#CD7F32]">B:{bronze}</span>

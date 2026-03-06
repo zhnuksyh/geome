@@ -9,6 +9,7 @@ import { WinModal } from './components/WinModal';
 import { MainMenu } from './components/MainMenu';
 import { sfx } from './game/audio';
 import confetti from 'canvas-confetti';
+import { useAchievements } from './game/achievements';
 
 export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
@@ -23,7 +24,7 @@ export default function App() {
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
-  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected'>('menu');
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected' | 'won'>('menu');
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
   const [activeHoverOp, setActiveHoverOp] = useState<OpType | null>(null);
@@ -32,6 +33,8 @@ export default function App() {
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(false);
+
+  const { recentUnlock, unlock } = useAchievements();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -71,6 +74,12 @@ export default function App() {
     return () => clearInterval(timer);
   }, [gameState]);
 
+  // ─── Achievement Hooks ─────────────────────────────────────────────
+  useEffect(() => {
+    if (shapes.length >= 10) unlock('the_architect');
+    if (shapes.some(s => s.op !== 'source-over')) unlock('first_boolean');
+  }, [shapes, unlock]);
+
   // ─── Audio Control ─────────────────────────────────────────────────
   useEffect(() => {
     sfx.setEnabled(isAudioOn);
@@ -94,6 +103,7 @@ export default function App() {
 
   const handleFinalize = useCallback(() => {
     if (accuracy >= 95.0) {
+      setGameState('won');
       sfx.playSuccess();
       confetti({
         particleCount: 150,
@@ -101,7 +111,15 @@ export default function App() {
         origin: { y: 0.6 },
         colors: ['#E63946', '#FFB703', '#1D3557', '#000000']
       });
-      setIsWinModalOpen(true);
+
+      const levelData = LEVELS[currentLevel % LEVELS.length];
+      const { gold } = levelData.par || { bronze: 99, silver: 99, gold: 99 };
+      
+      if (timeElapsed <= 10) unlock('speed_demon');
+      if (moves <= gold) unlock('efficiency_expert');
+      if (accuracy >= 99.9) unlock('perfectionist');
+
+      setTimeout(() => setIsWinModalOpen(true), 1500);
       // Unlock the next level if we beat the current peak
       setMaxUnlockedLevel(prev => Math.max(prev, currentLevel + 1));
     } else {
@@ -244,6 +262,20 @@ export default function App() {
         </div>
       )}
 
+      {/* Achievement Toast */}
+      {recentUnlock && (
+        <div className="fixed bottom-8 right-8 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="bg-[var(--panel-bg)] border-2 border-[#A8AADC] shadow-[4px_4px_0px_0px_#A8AADC] p-4 flex items-center gap-4 w-80">
+            <div className="text-3xl">{recentUnlock.icon}</div>
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] uppercase font-bold text-[#A8AADC] tracking-widest leading-none mb-1">Achievement Unlocked</span>
+              <span className="text-sm font-black text-[var(--text-color)] leading-snug truncate">{recentUnlock.title}</span>
+              <span className="text-[10px] text-[var(--text-color)] opacity-70 leading-tight mt-0.5">{recentUnlock.description}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* UI Overlay */}
       <GameUI
         currentLevel={currentLevel}
@@ -252,6 +284,7 @@ export default function App() {
         moves={moves}
         timeElapsed={timeElapsed}
         showGrid={showGrid}
+        allowedTools={LEVELS[currentLevel % LEVELS.length].allowedTools}
         activeTool={activeTool}
         selectedOp={selectedOp}
         shapes={shapes}

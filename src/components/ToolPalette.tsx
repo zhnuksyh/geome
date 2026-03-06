@@ -1,5 +1,5 @@
-import { Circle, Square, Triangle, Hexagon, PieChart, Combine, Minus, Target, Orbit, MousePointer2 } from 'lucide-react';
-import type { ToolMode, OpType } from '../types/game';
+import { Circle, Square, Triangle, Hexagon, PieChart, Combine, Minus, Target, Orbit, MousePointer2, Pentagon, Diamond, CircleDot } from 'lucide-react';
+import type { ToolMode, OpType, ShapeType } from '../types/game';
 import { sfx } from '../game/audio';
 
 interface ToolPaletteProps {
@@ -8,6 +8,7 @@ interface ToolPaletteProps {
   onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
   onHoverOp: (op: OpType | null) => void;
+  allowedTools: ShapeType[];
 }
 
 const PRIMITIVES = [
@@ -17,6 +18,9 @@ const PRIMITIVES = [
   { id: 'triangle' as ToolMode, icon: Triangle, label: 'Triangle', key: 'T' },
   { id: 'hexagon' as ToolMode, icon: Hexagon, label: 'Hexagon', key: 'H' },
   { id: 'semicircle' as ToolMode, icon: PieChart, label: 'Semi', key: 'E' },
+  { id: 'pentagon' as ToolMode, icon: Pentagon, label: 'Penta', key: 'P' },
+  { id: 'rhombus' as ToolMode, icon: Diamond, label: 'Rhomb', key: 'R' },
+  { id: 'ellipse' as ToolMode, icon: CircleDot, label: 'Ellipse', key: 'L' },
 ];
 
 const OPERATIONS = [
@@ -26,7 +30,9 @@ const OPERATIONS = [
   { id: 'xor' as OpType, icon: Orbit, label: 'XOR', key: '4' },
 ];
 
-export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, onHoverOp }: ToolPaletteProps) {
+export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, onHoverOp, allowedTools }: ToolPaletteProps) {
+  const visiblePrimitives = PRIMITIVES.filter(tool => tool.id === 'select' || allowedTools.includes(tool.id as ShapeType));
+  
   return (
     <div className="mt-auto flex justify-center pointer-events-auto">
       <div className="bg-[var(--panel-bg)] border-[3px] border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] p-3 flex gap-6 items-center">
@@ -36,7 +42,7 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
             Tools
           </span>
           <div className="flex gap-2">
-            {PRIMITIVES.map((tool) => {
+            {visiblePrimitives.map((tool) => {
               const isActive = activeTool === tool.id;
               const Icon = tool.icon;
               return (

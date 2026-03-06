@@ -3,7 +3,7 @@
 // ============================================================================
 
 /** Available geometric primitive types */
-export type ShapeType = 'circle' | 'square' | 'triangle' | 'semicircle' | 'hexagon';
+export type ShapeType = 'circle' | 'square' | 'triangle' | 'semicircle' | 'hexagon' | 'pentagon' | 'rhombus' | 'ellipse';
 
 /** Active tool selection (select mode vs primitive mode) */
 export type ToolMode = 'select' | 'slice' | ShapeType;
@@ -31,4 +31,5 @@ export interface LevelDef {
     title: string;
     par: { bronze: number, silver: number, gold: number };
     targetShapes: Omit<ShapeObj, "id">[];
+    allowedTools: ShapeType[];
 }

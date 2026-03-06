@@ -35,6 +35,25 @@ export const getShapePath = (type: ShapeType, size: number): Path2D => {
             else path.lineTo(x, y);
         }
         path.closePath();
+    } else if (type === 'pentagon') {
+        const r = size;
+        for (let i = 0; i < 5; i++) {
+            const angle = (Math.PI * 2 / 5) * i - (Math.PI / 2); // Start at top
+            const x = r * Math.cos(angle);
+            const y = r * Math.sin(angle);
+            if (i === 0) path.moveTo(x, y);
+            else path.lineTo(x, y);
+        }
+        path.closePath();
+    } else if (type === 'rhombus') {
+        const r = size;
+        path.moveTo(0, -r);
+        path.lineTo(r * 0.7, 0);
+        path.lineTo(0, r);
+        path.lineTo(-r * 0.7, 0);
+        path.closePath();
+    } else if (type === 'ellipse') {
+        path.ellipse(0, 0, size, size * 0.6, 0, 0, Math.PI * 2);
     }
     return path;
 };
@@ -79,24 +98,35 @@ export const drawShape = (
 
 export const LEVELS: LevelDef[] = [
     {
+        title: "The Solitary Dot",
+        par: { bronze: 3, silver: 2, gold: 1 },
+        allowedTools: ['circle'],
+        targetShapes: [
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 100, rotation: 0 }
+        ]
+    },
+    {
         title: "Vesica Piscis",
         par: { bronze: 5, silver: 3, gold: 2 },
+        allowedTools: ['circle'],
         targetShapes: [
             { type: 'circle', op: 'source-over', x: 270, y: 300, size: 90, rotation: 0 },
             { type: 'circle', op: 'destination-in', x: 330, y: 300, size: 90, rotation: 0 }
         ]
     },
     {
-        title: "Lunar Subtract",
+        title: "Lunar Eclipse",
         par: { bronze: 5, silver: 3, gold: 2 },
+        allowedTools: ['circle'],
         targetShapes: [
             { type: 'circle', op: 'source-over', x: 300, y: 300, size: 120, rotation: 0 },
-            { type: 'circle', op: 'destination-out', x: 330, y: 270, size: 90, rotation: 0 }
+            { type: 'circle', op: 'destination-out', x: 340, y: 260, size: 90, rotation: 0 }
         ]
     },
     {
         title: "The XOR Eye",
         par: { bronze: 5, silver: 3, gold: 2 },
+        allowedTools: ['circle', 'square'],
         targetShapes: [
             { type: 'square', op: 'source-over', x: 300, y: 300, size: 120, rotation: Math.PI / 4 },
             { type: 'circle', op: 'xor', x: 300, y: 300, size: 60, rotation: 0 }
@@ -104,10 +134,63 @@ export const LEVELS: LevelDef[] = [
     },
     {
         title: "Constructivist Gate",
+        par: { bronze: 6, silver: 4, gold: 3 },
+        allowedTools: ['circle', 'square', 'triangle'],
         targetShapes: [
             { type: 'square', op: 'source-over', x: 300, y: 300, size: 150, rotation: 0 },
             { type: 'triangle', op: 'source-over', x: 300, y: 150, size: 150, rotation: 0 },
             { type: 'circle', op: 'destination-out', x: 300, y: 360, size: 60, rotation: 0 }
+        ]
+    },
+    {
+        title: "Archway",
+        par: { bronze: 5, silver: 3, gold: 2 },
+        allowedTools: ['square', 'semicircle'],
+        targetShapes: [
+            { type: 'square', op: 'source-over', x: 300, y: 350, size: 100, rotation: 0 },
+            { type: 'semicircle', op: 'source-over', x: 300, y: 250, size: 100, rotation: -Math.PI / 2 },
+            { type: 'square', op: 'destination-out', x: 300, y: 380, size: 60, rotation: 0 },
+            { type: 'semicircle', op: 'destination-out', x: 300, y: 320, size: 60, rotation: -Math.PI / 2 }
+        ]
+    },
+    {
+        title: "Hexagonal Ring",
+        par: { bronze: 6, silver: 4, gold: 2 },
+        allowedTools: ['hexagon', 'circle'],
+        targetShapes: [
+            { type: 'hexagon', op: 'source-over', x: 300, y: 300, size: 150, rotation: 0 },
+            { type: 'circle', op: 'destination-out', x: 300, y: 300, size: 90, rotation: 0 }
+        ]
+    },
+    {
+        title: "The Gemstone",
+        par: { bronze: 6, silver: 4, gold: 3 },
+        allowedTools: ['rhombus', 'triangle', 'square'],
+        targetShapes: [
+            { type: 'rhombus', op: 'source-over', x: 300, y: 300, size: 160, rotation: 0 },
+            { type: 'triangle', op: 'destination-out', x: 300, y: 180, size: 60, rotation: 0 },
+            { type: 'triangle', op: 'destination-out', x: 300, y: 420, size: 60, rotation: Math.PI }
+        ]
+    },
+    {
+        title: "Saturn's Orbit",
+        par: { bronze: 7, silver: 5, gold: 3 },
+        allowedTools: ['ellipse', 'circle', 'square'],
+        targetShapes: [
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 80, rotation: 0 },
+            { type: 'ellipse', op: 'xor', x: 300, y: 300, size: 200, rotation: Math.PI / 6 },
+            { type: 'ellipse', op: 'destination-out', x: 300, y: 300, size: 180, rotation: Math.PI / 6 }
+        ]
+    },
+    {
+        title: "Bauhaus Crown",
+        par: { bronze: 10, silver: 7, gold: 5 },
+        allowedTools: ['pentagon', 'semicircle', 'rhombus', 'triangle'],
+        targetShapes: [
+            { type: 'pentagon', op: 'source-over', x: 300, y: 280, size: 140, rotation: 0 },
+            { type: 'rhombus', op: 'source-over', x: 300, y: 360, size: 120, rotation: Math.PI / 2 },
+            { type: 'semicircle', op: 'destination-out', x: 300, y: 460, size: 100, rotation: -Math.PI / 2 },
+            { type: 'triangle', op: 'xor', x: 300, y: 160, size: 80, rotation: Math.PI }
         ]
     }
 ];
