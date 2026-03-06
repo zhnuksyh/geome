@@ -99,7 +99,7 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onToggleGrid}
-                  className={`text-[10px] font-bold uppercase tracking-widest ${showGrid ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${showGrid ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1`}
                 >
                   {showGrid ? "[G] GRID ON" : "[G] GRID OFF"}
                 </Button>
@@ -107,7 +107,7 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onToggleAudio}
-                  className={`text-[10px] font-bold uppercase tracking-widest ${isAudioOn ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1 flex justify-center items-center`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${isAudioOn ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1 flex justify-center items-center`}
                   title={isAudioOn ? "Mute Music" : "Play Ambient Music"}
                 >
                   {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
@@ -116,48 +116,48 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onClear}
-                  className="text-[10px] font-bold uppercase tracking-widest hover:text-[#E63946] flex-1"
+                  className="text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 hover:text-[#E63946] flex-1"
                 >
                   Clear All
                 </Button>
               </div>
             </div>
 
-            {/* Instructions Panel */}
-            <div className="flex flex-col gap-3 text-right mt-2">
-              <div className="text-[10px] leading-relaxed text-gray-400 uppercase font-bold">
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Keyboard size={12} /> V Select · C S T Tools
+            {/* Instructions Panel Card */}
+            <div className="bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 flex flex-col gap-3 text-left mt-2 w-[260px]">
+              <div className="text-[10px] leading-relaxed text-gray-500 uppercase font-bold">
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Keyboard size={12} className="text-black" /> V Select · C S T Tools
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Keyboard size={12} /> 1 2 3 4 Operations
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Keyboard size={12} className="text-black" /> 1 2 3 4 Operations
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Grid size={12} /> G Toggle Snap Grid
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Grid size={12} className="text-black" /> G Toggle Snap Grid
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Orbit size={12} /> Drag to Select/Move
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Orbit size={12} className="text-[#E63946]" /> Drag to Select/Move
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Layers size={12} /> Scroll to Resize
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Layers size={12} className="text-[#E63946]" /> Scroll to Resize
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <RotateCw size={12} /> Shift+Scroll to Rotate
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <RotateCw size={12} className="text-[#E63946]" /> Shift+Scroll to Rotate
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Layers size={12} /> [ ] Reorder Layers
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Layers size={12} className="text-[#FFB703]" /> [ ] Reorder Layers
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Copy size={12} /> Ctrl+D Duplicate
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Copy size={12} className="text-[#FFB703]" /> Ctrl+D Duplicate
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Undo2 size={12} /> Ctrl+Z / Ctrl+Shift+Z
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Undo2 size={12} className="text-[#1D3557]" /> Ctrl+Z / Ctrl+Shift+Z
                 </p>
-                <p className="flex items-center justify-end gap-2 mb-1">
-                  <Orbit size={12} /> [Space] Peek Target
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Orbit size={12} className="text-[#1D3557]" /> [Space] Peek Target
                 </p>
-                <p className="flex items-center justify-end gap-2">
-                  <Trash2 size={12} /> Del to Remove · Esc Deselect
+                <p className="flex items-center justify-start gap-3">
+                  <Trash2 size={12} className="text-black" /> Del to Remove · Esc Deselect
                 </p>
               </div>
             </div>

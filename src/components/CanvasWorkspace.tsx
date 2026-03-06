@@ -90,7 +90,7 @@ export function CanvasWorkspace({
   }, [currentLevel, targets]);
 
   // ─── Render game canvas ────────────────────────────────────────────
-  const renderGameCanvas = useCallback(() => {
+  const renderGameCanvas = useCallback((offset: number = 0) => {
     const ctx = gameCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
@@ -147,6 +147,9 @@ export function CanvasWorkspace({
         ctx.strokeStyle = '#E63946';
         ctx.lineWidth = 2;
         ctx.setLineDash([6, 6]);
+        ctx.lineDashOffset = -offset; // Marching ants animation
+        ctx.beginPath();
+        
         ctx.save();
         ctx.translate(s.x, s.y);
         ctx.rotate(s.rotation);
@@ -155,6 +158,7 @@ export function CanvasWorkspace({
         ctx.stroke(getShapePath(s.type, s.size));
         ctx.restore();
         ctx.setLineDash([]);
+        ctx.lineDashOffset = 0; // Reset for other draws
       }
     });
 
@@ -164,14 +168,15 @@ export function CanvasWorkspace({
       ctx.strokeStyle = '#E63946';
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
+      ctx.lineDashOffset = -offset; // Marching ants for bounding box
       ctx.fillRect(selectionBox.x, selectionBox.y, selectionBox.w, selectionBox.h);
       ctx.strokeRect(selectionBox.x, selectionBox.y, selectionBox.w, selectionBox.h);
       ctx.setLineDash([]);
+      ctx.lineDashOffset = 0;
     }
 
   }, [shapes, activeShapeIds, selectionBox, showGrid, isPeeking]);
 
-  // ─── Accuracy (IoU) ────────────────────────────────────────────────
   const calculateAccuracy = useCallback(() => {
     const ctx = gameCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     const tCtx = targetCanvasRef.current?.getContext('2d', { willReadFrequently: true });
@@ -194,11 +199,28 @@ export function CanvasWorkspace({
   }, [onAccuracyChange]);
 
   useEffect(() => {
-    renderGameCanvas();
+    let animationFrameId: number;
+
+    const renderLoop = (time: number) => {
+      // Create a marching ants animation effect natively in canvas
+      // We animate at a speed of 0.02 pixels per ms
+      const offset = time * 0.02; 
+      renderGameCanvas(offset);
+      animationFrameId = requestAnimationFrame(renderLoop);
+    };
+
+    // Start loop
+    animationFrameId = requestAnimationFrame(renderLoop);
+
+    // Initial accuracy calc
     const timer = setTimeout(() => {
       calculateAccuracy();
     }, 50);
-    return () => clearTimeout(timer);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearTimeout(timer);
+    };
   }, [renderGameCanvas, calculateAccuracy]);
 
   // ─── Pointer events ────────────────────────────────────────────────

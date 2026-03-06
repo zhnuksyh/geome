@@ -72,7 +72,7 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }
                   key={op.id}
                   onClick={() => onSelectOp(op.id)}
                   title={`${op.label} (${op.key})`}
-                  className={`p-2 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
+                  className={`p-2 border-2 transition-transform duration-200 flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${
                       isActive
                         ? 'bg-black text-white border-black translate-x-1 translate-y-1'
