@@ -20,7 +20,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
       {/* Fill Bar */}
       <div
         className={`h-full w-full flex-1 transition-all duration-500 ease-in-out ${
-          value >= target ? 'bg-[#E63946]' : 'bg-black'
+          value >= target ? 'bg-[#4CAF50]' : 'bg-black'
         }`}
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />

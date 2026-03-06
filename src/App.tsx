@@ -6,6 +6,8 @@ import { LEVELS, CANVAS_SIZE, generateId } from './game/levels';
 import { GameUI } from './components/GameUI';
 import { CanvasWorkspace } from './components/CanvasWorkspace';
 import { WinModal } from './components/WinModal';
+import { MainMenu } from './components/MainMenu';
+import confetti from 'canvas-confetti';
 
 export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
@@ -18,13 +20,16 @@ export default function App() {
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
+  const [gameState, setGameState] = useState<'menu' | 'playing'>('menu');
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
   const [activeShapeIds, setActiveShapeIds] = useState<string[]>([]);
   const [accuracy, setAccuracy] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Seed an initial shape if canvas is empty (e.g. on first visit)
   useEffect(() => {
@@ -45,6 +50,17 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ─── Audio Control ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isAudioOn) {
+        audioRef.current.play().catch(e => console.log("Audio play blocked by browser:", e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isAudioOn]);
+
   // ─── Game Actions ──────────────────────────────────────────────────
   const handleClear = useCallback(() => {
     snapshot();
@@ -53,7 +69,13 @@ export default function App() {
   }, [setShapes, snapshot]);
 
   const handleFinalize = useCallback(() => {
-    if (accuracy >= 90.0) {
+    if (accuracy >= 95.0) {
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#E63946', '#FFB703', '#1D3557', '#000000']
+      });
       setIsWinModalOpen(true);
       // Unlock the next level if we beat the current peak
       setMaxUnlockedLevel(prev => Math.max(prev, currentLevel + 1));
@@ -161,6 +183,10 @@ export default function App() {
         backgroundSize: '40px 40px',
       }}
     >
+      {gameState === 'menu' && (
+        <MainMenu onPlay={() => setGameState('playing')} />
+      )}
+
       {/* UI Overlay */}
       <GameUI
         currentLevel={currentLevel}
@@ -182,6 +208,8 @@ export default function App() {
         onDuplicate={handleDuplicateSelected}
         onDelete={handleDeleteSelected}
         onToggleGrid={() => setShowGrid(!showGrid)}
+        isAudioOn={isAudioOn}
+        onToggleAudio={() => setIsAudioOn(!isAudioOn)}
       />
 
       {/* Canvas Workspace */}
@@ -208,6 +236,9 @@ export default function App() {
 
       {/* Win Modal */}
       <WinModal isOpen={isWinModalOpen} onNextLevel={handleNextLevel} />
+
+      {/* Ambient Audio Player */}
+      <audio ref={audioRef} loop src="/audio/ambient-loop.wav" />
     </div>
   );
 }

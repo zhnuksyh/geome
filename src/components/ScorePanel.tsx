@@ -35,7 +35,7 @@ export function ScorePanel({ currentLevel, accuracy, onOpenLevelSelect }: ScoreP
           <span className="text-[10px] font-bold text-gray-500 uppercase">Match Precision</span>
           <span
             className={`font-mono text-xl font-bold ${
-              accuracy >= 95 ? 'text-[#E63946] animate-pulse' : 'text-black'
+              accuracy >= 95 ? 'text-[#4CAF50] animate-pulse' : 'text-black'
             }`}
           >
             {accuracy.toFixed(1)}%

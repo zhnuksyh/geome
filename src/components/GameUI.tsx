@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -16,6 +16,8 @@ interface GameUIProps {
   selectedOp: OpType;
   shapes: ShapeObj[];
   activeShapeIds: string[];
+  isAudioOn: boolean;
+  onToggleAudio: () => void;
   onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
   onClear: () => void;
@@ -38,6 +40,8 @@ export function GameUI({
   selectedOp,
   shapes,
   activeShapeIds,
+  isAudioOn,
+  onToggleAudio,
   onSelectTool,
   onSelectOp,
   onClear,
@@ -95,15 +99,24 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onToggleGrid}
-                  className={`text-[10px] font-bold uppercase tracking-widest ${showGrid ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100`}
+                  className={`text-[10px] font-bold uppercase tracking-widest ${showGrid ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1`}
                 >
                   {showGrid ? "[G] GRID ON" : "[G] GRID OFF"}
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={onToggleAudio}
+                  className={`text-[10px] font-bold uppercase tracking-widest ${isAudioOn ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1 flex justify-center items-center`}
+                  title={isAudioOn ? "Mute Music" : "Play Ambient Music"}
+                >
+                  {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={onClear}
-                  className="text-[10px] font-bold uppercase tracking-widest hover:text-[#E63946]"
+                  className="text-[10px] font-bold uppercase tracking-widest hover:text-[#E63946] flex-1"
                 >
                   Clear All
                 </Button>
@@ -139,6 +152,9 @@ export function GameUI({
                 </p>
                 <p className="flex items-center justify-end gap-2 mb-1">
                   <Undo2 size={12} /> Ctrl+Z / Ctrl+Shift+Z
+                </p>
+                <p className="flex items-center justify-end gap-2 mb-1">
+                  <Orbit size={12} /> [Space] Peek Target
                 </p>
                 <p className="flex items-center justify-end gap-2">
                   <Trash2 size={12} /> Del to Remove · Esc Deselect
