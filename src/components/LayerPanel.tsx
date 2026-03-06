@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, Copy, Trash2, Circle, Square, Triangle, Combine, Minus, Target, Orbit } from 'lucide-react';
+import { ArrowUp, ArrowDown, Copy, Trash2, Circle, Square, Triangle, Hexagon, PieChart, Combine, Minus, Target, Orbit } from 'lucide-react';
 import type { ShapeObj, ShapeType, OpType } from '../types/game';
 import { Button } from './ui/Button';
 
@@ -16,6 +16,8 @@ const ShapeIcon = ({ type, className }: { type: ShapeType; className?: string })
   if (type === 'circle') return <Circle className={className} />;
   if (type === 'square') return <Square className={className} />;
   if (type === 'triangle') return <Triangle className={className} />;
+  if (type === 'hexagon') return <Hexagon className={className} />;
+  if (type === 'semicircle') return <PieChart className={className} />;
   return null;
 };
 

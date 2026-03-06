@@ -108,7 +108,7 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onToggleGrid}
-                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${showGrid ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${showGrid ? "text-[var(--accent-red)] opacity-100" : "text-[var(--text-color)] opacity-60"} hover:opacity-100 flex-1`}
                 >
                   {showGrid ? "[G] GRID ON" : "[G] GRID OFF"}
                 </Button>
@@ -116,7 +116,7 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onToggleAudio}
-                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${isAudioOn ? "text-[var(--accent-red)] opacity-100" : "opacity-50"} hover:opacity-100 flex-1 flex justify-center items-center`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${isAudioOn ? "text-[var(--accent-red)] opacity-100" : "text-[var(--text-color)] opacity-60"} hover:opacity-100 flex-1 flex justify-center items-center`}
                   title={isAudioOn ? "Mute Music" : "Play Ambient Music"}
                 >
                   {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
@@ -138,7 +138,7 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onClear}
-                  className="text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 hover:text-[var(--accent-red)] flex-1"
+                  className="text-[10px] text-[var(--text-color)] opacity-60 font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 hover:text-[var(--accent-red)] flex-1"
                 >
                   Clear All
                 </Button>
