@@ -23,7 +23,7 @@ export default function App() {
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
-  const [gameState, setGameState] = useState<'menu' | 'playing'>('menu');
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected'>('menu');
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
   const [activeHoverOp, setActiveHoverOp] = useState<OpType | null>(null);
@@ -206,6 +206,26 @@ export default function App() {
     >
       {gameState === 'menu' && (
         <MainMenu onPlay={() => setGameState('playing')} />
+      )}
+
+      {/* Rejection Modal */
+      gameState === 'rejected' && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in zoom-in duration-300">
+          <div className="bg-[var(--panel-bg)] border-4 border-[var(--accent-red)] shadow-[12px_12px_0px_0px_var(--accent-red)] p-12 max-w-sm text-center">
+            <h2 className="text-4xl font-black mb-4 tracking-tighter text-[var(--accent-red)] uppercase">
+              Form Rejected
+            </h2>
+            <p className="text-sm font-bold uppercase tracking-widest mb-8 text-[var(--text-color)] opacity-80">
+              Geometric alignment is insufficient. Required precision: 95.0%. Current: {accuracy.toFixed(1)}%.
+            </p>
+            <button
+              onClick={() => setGameState('playing')}
+              className="w-full tracking-[0.2em] font-bold py-4 uppercase border-2 border-[var(--accent-red)] bg-[var(--accent-red)] text-white hover:bg-[var(--bg-color)] hover:text-[var(--accent-red)] transition-colors"
+            >
+              Resume Assembly
+            </button>
+          </div>
+        </div>
       )}
 
       {/* UI Overlay */}

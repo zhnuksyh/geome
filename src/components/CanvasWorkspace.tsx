@@ -94,8 +94,9 @@ export function CanvasWorkspace({
     const tCtx = targetCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (tCtx) {
       tCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#000000';
       targets.forEach(t => {
-        drawShape(tCtx, t.type, t.op, t.x, t.y, t.size, t.rotation, "black");
+        drawShape(tCtx, t.type, t.op, t.x, t.y, t.size, t.rotation, themeColor);
       });
       setTimeout(() => calculateAccuracy(), 50);
     }
@@ -131,7 +132,8 @@ export function CanvasWorkspace({
         bCtx.globalAlpha = 1.0; 
       }
 
-      drawShape(bCtx, s.type, actualOp, s.x, s.y, s.size, s.rotation, "black");
+      const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#000000';
+      drawShape(bCtx, s.type, actualOp, s.x, s.y, s.size, s.rotation, themeColor);
       bCtx.globalAlpha = 1.0; // Reset for standard operations
     });
 
@@ -143,7 +145,9 @@ export function CanvasWorkspace({
 
     // Draw Grid overlay if toggled
     if (showGrid) {
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+      const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid-color-dark') || 'rgba(0, 0, 0, 0.2)';
+      const isDarkMode = document.documentElement.getAttribute('data-theme') !== 'light';
+      ctx.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.2)';
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 4]); // Dotted grid
       ctx.beginPath();
@@ -707,9 +711,9 @@ export function CanvasWorkspace({
         style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
       >
         <div ref={containerRef} className="relative transition-transform duration-75">
-          <div className="absolute -inset-1 bg-black translate-x-3 translate-y-3" />
+          <div className="absolute -inset-1 bg-[var(--shadow-color)] translate-x-3 translate-y-3" />
           <div
-            className="relative bg-white border-[3px] border-black overflow-hidden"
+            className="relative bg-[var(--bg-color)] border-[3px] border-[var(--panel-border)] overflow-hidden"
             style={{ width: CANVAS_SIZE, height: CANVAS_SIZE }}
           >
             {/* Target Reference Layer */}
