@@ -169,7 +169,7 @@ export function CanvasWorkspace({
       ctx.setLineDash([]);
     }
 
-  }, [shapes, activeShapeIds, selectionBox, showGrid]);
+  }, [shapes, activeShapeIds, selectionBox, showGrid, isPeeking]);
 
   // ─── Accuracy (IoU) ────────────────────────────────────────────────
   const calculateAccuracy = useCallback(() => {
