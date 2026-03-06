@@ -17,8 +17,8 @@ const PRIMITIVES = [
 
 const OPERATIONS = [
   { id: 'source-over' as OpType, icon: Combine, label: 'Union', key: '1' },
-  { id: 'destination-out' as OpType, icon: Minus, label: 'Subtract', key: '2' },
-  { id: 'destination-in' as OpType, icon: Target, label: 'Intersect', key: '3' },
+  { id: 'destination-out' as OpType, icon: Minus, label: 'Subtra', key: '2' },
+  { id: 'destination-in' as OpType, icon: Target, label: 'Inter', key: '3' },
   { id: 'xor' as OpType, icon: Orbit, label: 'XOR', key: '4' },
 ];
 

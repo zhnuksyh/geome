@@ -111,12 +111,12 @@ export function CanvasWorkspace({
 
     // Draw Grid overlay if toggled
     if (showGrid) {
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 4]); // Dotted grid
       ctx.beginPath();
-      // Draw 40px interval lines offset by 20px to perfectly center on 600px surface (300 center)
-      for (let i = 20; i <= CANVAS_SIZE; i += 40) {
+      // Draw 60px interval lines mapping exactly to a 600px square
+      for (let i = 0; i <= CANVAS_SIZE; i += 60) {
         ctx.moveTo(i, 0);
         ctx.lineTo(i, CANVAS_SIZE);
         ctx.moveTo(0, i);
@@ -334,10 +334,10 @@ export function CanvasWorkspace({
             let finalX = orig.x + dx + snapDx;
             let finalY = orig.y + dy + snapDy;
             
-            // If grid snapping is on, strictly bind to 40px grid (offset by 20px)
+            // If grid snapping is on, bind to 30px intervals (half of 60px grid bounds for centering flexibility)
             if (showGrid) {
-              finalX = Math.round((finalX - 20) / 40) * 40 + 20;
-              finalY = Math.round((finalY - 20) / 40) * 40 + 20;
+              finalX = Math.round(finalX / 30) * 30;
+              finalY = Math.round(finalY / 30) * 30;
             }
 
             return { ...s, x: finalX, y: finalY };
@@ -417,9 +417,9 @@ export function CanvasWorkspace({
                   activeShape.rotation += e.deltaY > 0 ? 0.08 : -0.08;
                 }
               } else {
-                // If grid is active, snap radius to 20 to lock onto 40 grid width
-                const delta = e.deltaY > 0 ? (showGrid ? -20 : -4) : (showGrid ? 20 : 4);
-                activeShape.size = Math.max(20, activeShape.size + delta);
+                // If grid is active, snap radius to 30 to lock onto 60 grid width
+                const delta = e.deltaY > 0 ? (showGrid ? -30 : -4) : (showGrid ? 30 : 4);
+                activeShape.size = Math.max(30, activeShape.size + delta);
               }
               return activeShape;
             }

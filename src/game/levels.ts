@@ -52,30 +52,30 @@ export const LEVELS: LevelDef[] = [
     {
         title: "Vesica Piscis",
         targetShapes: [
-            { type: 'circle', op: 'source-over', x: 260, y: 300, size: 100, rotation: 0 },
-            { type: 'circle', op: 'destination-in', x: 340, y: 300, size: 100, rotation: 0 }
+            { type: 'circle', op: 'source-over', x: 270, y: 300, size: 90, rotation: 0 },
+            { type: 'circle', op: 'destination-in', x: 330, y: 300, size: 90, rotation: 0 }
         ]
     },
     {
         title: "Lunar Subtract",
         targetShapes: [
             { type: 'circle', op: 'source-over', x: 300, y: 300, size: 120, rotation: 0 },
-            { type: 'circle', op: 'destination-out', x: 340, y: 260, size: 100, rotation: 0 }
+            { type: 'circle', op: 'destination-out', x: 330, y: 270, size: 90, rotation: 0 }
         ]
     },
     {
         title: "The XOR Eye",
         targetShapes: [
             { type: 'square', op: 'source-over', x: 300, y: 300, size: 120, rotation: Math.PI / 4 },
-            { type: 'circle', op: 'xor', x: 300, y: 300, size: 80, rotation: 0 }
+            { type: 'circle', op: 'xor', x: 300, y: 300, size: 60, rotation: 0 }
         ]
     },
     {
         title: "Constructivist Gate",
         targetShapes: [
-            { type: 'square', op: 'source-over', x: 300, y: 300, size: 140, rotation: 0 },
-            { type: 'triangle', op: 'source-over', x: 300, y: 140, size: 140, rotation: 0 },
-            { type: 'circle', op: 'destination-out', x: 300, y: 340, size: 80, rotation: 0 }
+            { type: 'square', op: 'source-over', x: 300, y: 300, size: 150, rotation: 0 },
+            { type: 'triangle', op: 'source-over', x: 300, y: 150, size: 150, rotation: 0 },
+            { type: 'circle', op: 'destination-out', x: 300, y: 360, size: 60, rotation: 0 }
         ]
     }
 ];
