@@ -6,7 +6,7 @@ import { ToolPalette } from './ToolPalette';
 import { LayerPanel } from './LayerPanel';
 import { LevelSelectModal } from './LevelSelectModal';
 import { LEVELS } from '../game/levels';
-import type { ToolMode, OpType, ShapeObj } from '../types/game';
+import type { ToolMode, OpType, ShapeObj, ShapeType } from '../types/game';
 
 interface GameUIProps {
   currentLevel: number;
@@ -249,6 +249,7 @@ export function GameUI({
           onSelectTool={onSelectTool}
           onSelectOp={onSelectOp}
           onHoverOp={onHoverOp}
+          allowedTools={allowedTools}
         />
       </div>
 
