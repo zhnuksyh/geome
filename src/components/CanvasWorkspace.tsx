@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
-import type { ToolMode, OpType, ShapeObj } from '../types/game';
+import type { ToolMode, OpType, ShapeObj, ShapeType } from '../types/game';
 import { CANVAS_SIZE, getShapePath, drawShape, LEVELS, generateId } from '../game/levels';
 import { sfx } from '../game/audio';
 
@@ -10,6 +10,7 @@ interface CanvasWorkspaceProps {
   activeTool: ToolMode;
   setActiveTool: (tool: ToolMode) => void;
   selectedOp: OpType;
+  activeHoverOp: OpType | null;
   activeShapeIds: string[];
   setActiveShapeIds: (ids: string[] | ((prev: string[]) => string[])) => void;
   onAccuracyChange: (accuracy: number) => void;
@@ -31,6 +32,7 @@ export function CanvasWorkspace({
   activeTool,
   setActiveTool,
   selectedOp,
+  activeHoverOp,
   activeShapeIds,
   setActiveShapeIds,
   onAccuracyChange,
@@ -54,6 +56,16 @@ export function CanvasWorkspace({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [isPeeking, setIsPeeking] = useState(false);
+
+  // Physics Toss state tracking
+  const lastMousePosRef = useRef<{ x: number; y: number } | null>(null);
+  const lastPointerTimeRef = useRef(0);
+  const pointerVelocityRef = useRef({ vx: 0, vy: 0 });
+  const glideFrameRef = useRef<number | null>(null);
+
+  // Slicer Tool state
+  const sliceStartRef = useRef<{ x: number; y: number } | null>(null);
+  const sliceEndRef = useRef<{ x: number; y: number } | null>(null);
 
   const targets = LEVELS[currentLevel % LEVELS.length].targetShapes;
 
@@ -105,11 +117,16 @@ export function CanvasWorkspace({
 
     shapes.forEach((s, index) => {
       // Force the very first shape to always be source-over so it's never invisible
-      const actualOp = index === 0 ? 'source-over' : s.op;
+      let actualOp = index === 0 ? 'source-over' : s.op;
       
-      // Handle Target Visibility Opacity for individual dragging
-      if (isDraggingShapesRef.current && activeShapeIds.includes(s.id)) {
-        bCtx.globalAlpha = 0.5; // Make only the dragged/scrolled item translucent to see target intersection
+      const isHoveredPreview = activeHoverOp !== null && activeShapeIds.includes(s.id);
+      if (isHoveredPreview) {
+        actualOp = activeHoverOp;
+      }
+      
+      // Handle Target Visibility Opacity for individual dragging or hovering
+      if ((isDraggingShapesRef.current && activeShapeIds.includes(s.id)) || isHoveredPreview) {
+        bCtx.globalAlpha = 0.5; // Make only the dragged/scrolled/previewed item translucent to see target intersection
       } else {
         bCtx.globalAlpha = 1.0; 
       }
@@ -176,7 +193,19 @@ export function CanvasWorkspace({
       ctx.lineDashOffset = 0;
     }
 
-  }, [shapes, activeShapeIds, selectionBox, showGrid, isPeeking]);
+    // Render Slice Line
+    if (activeTool === 'slice' && sliceStartRef.current && sliceEndRef.current) {
+      ctx.strokeStyle = '#E63946'; // Red slice line
+      ctx.lineWidth = 3;
+      ctx.setLineDash([10, 5]);
+      ctx.beginPath();
+      ctx.moveTo(sliceStartRef.current.x, sliceStartRef.current.y);
+      ctx.lineTo(sliceEndRef.current.x, sliceEndRef.current.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+  }, [shapes, activeShapeIds, selectionBox, showGrid, isPeeking, activeHoverOp, activeTool]);
 
   const calculateAccuracy = useCallback(() => {
     const ctx = gameCanvasRef.current?.getContext('2d', { willReadFrequently: true });
@@ -225,7 +254,7 @@ export function CanvasWorkspace({
   }, [renderGameCanvas, calculateAccuracy]);
 
   // ─── Pointer events ────────────────────────────────────────────────
-  const handleAddShape = (type: 'circle' | 'square' | 'triangle', rawX: number, rawY: number) => {
+  const handleAddShape = (type: ShapeType, rawX: number, rawY: number) => {
     snapshot();
     const x = Math.round(rawX / 30) * 30;
     const y = Math.round(rawY / 30) * 30;
@@ -263,6 +292,21 @@ export function CanvasWorkspace({
     const { x: mouseX, y: mouseY } = toCanvasCoords(e.clientX, e.clientY);
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    if (glideFrameRef.current) {
+      cancelAnimationFrame(glideFrameRef.current);
+      glideFrameRef.current = null;
+    }
+    pointerVelocityRef.current = { vx: 0, vy: 0 };
+    lastPointerTimeRef.current = performance.now();
+    lastMousePosRef.current = { x: mouseX, y: mouseY };
+
+    // Slicer Tool
+    if (activeTool === 'slice') {
+      sliceStartRef.current = { x: mouseX, y: mouseY };
+      sliceEndRef.current = { x: mouseX, y: mouseY };
+      return;
+    }
 
     // Drawing a shape instead of selecting
     if (activeTool !== 'select') {
@@ -335,6 +379,30 @@ export function CanvasWorkspace({
       return;
     }
 
+    // Slicer Tool Line Drag
+    if (activeTool === 'slice' && sliceStartRef.current) {
+      sliceEndRef.current = { x: mouseX, y: mouseY };
+      requestAnimationFrame(() => renderGameCanvas());
+      return;
+    }
+
+    // Velocity Tracking
+    const now = performance.now();
+    let dt = 16;
+    if (lastPointerTimeRef.current) {
+      dt = Math.max(1, now - lastPointerTimeRef.current);
+    }
+    if (lastMousePosRef.current) {
+      const dvx = (mouseX - lastMousePosRef.current.x) / dt;
+      const dvy = (mouseY - lastMousePosRef.current.y) / dt;
+      pointerVelocityRef.current = {
+        vx: pointerVelocityRef.current.vx * 0.5 + dvx * 0.5,
+        vy: pointerVelocityRef.current.vy * 0.5 + dvy * 0.5
+      };
+    }
+    lastMousePosRef.current = { x: mouseX, y: mouseY };
+    lastPointerTimeRef.current = now;
+
     // Dragging shapes
     if (isDraggingShapesRef.current && activeShapeIds.length > 0 && dragStartPosRef.current) {
       const dx = mouseX - dragStartPosRef.current.x;
@@ -367,6 +435,53 @@ export function CanvasWorkspace({
   const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
     e.currentTarget.releasePointerCapture(e.pointerId);
 
+    // Slicer Tool Commit
+    if (activeTool === 'slice' && sliceStartRef.current && sliceEndRef.current) {
+      const p1 = sliceStartRef.current;
+      const p2 = sliceEndRef.current;
+      sliceStartRef.current = null;
+      sliceEndRef.current = null;
+      
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const dist = Math.hypot(dx, dy);
+      
+      if (dist > 10) {
+        sfx.playSlice();
+        snapshot();
+        const nx = -dy / dist;
+        const ny = dx / dist;
+        
+        setShapes(prev => {
+          const next: ShapeObj[] = [];
+          prev.forEach(s => {
+            const shouldSlice = activeShapeIds.length > 0 ? activeShapeIds.includes(s.id) : true;
+            if (shouldSlice) {
+              const pA = [...(s.clipPlanes || [])];
+              const pB = [...(s.clipPlanes || [])];
+              pA.push({ px: p1.x, py: p1.y, nx: nx, ny: ny });
+              pB.push({ px: p1.x, py: p1.y, nx: -nx, ny: -ny });
+              
+              const pushDist = 4;
+              const obj1 = { ...s, clipPlanes: pA, x: s.x + nx * pushDist, y: s.y + ny * pushDist };
+              const obj2 = { ...s, id: generateId(), clipPlanes: pB, x: s.x - nx * pushDist, y: s.y - ny * pushDist };
+              
+              next.push(obj1);
+              next.push(obj2);
+            } else {
+              next.push(s);
+            }
+          });
+          return next;
+        });
+        
+        setActiveShapeIds([]);
+        calculateAccuracy();
+      }
+      requestAnimationFrame(() => renderGameCanvas());
+      return;
+    }
+
     if (selectionBox) {
       // Find all shapes whose center is inside the selection box
       const newlySelected = shapes
@@ -388,7 +503,52 @@ export function CanvasWorkspace({
     }
 
     if (isDraggingShapesRef.current) {
-      snapshot(); // Record drag result
+      const { vx, vy } = pointerVelocityRef.current;
+      const speed = Math.hypot(vx, vy);
+
+      if (speed > 0.5) {
+        let currentVx = vx * 16;
+        let currentVy = vy * 16;
+        const flyingIds = [...activeShapeIds];
+
+        const glide = () => {
+          currentVx *= 0.92; // Friction multiplier
+          currentVy *= 0.92;
+
+          if (Math.abs(currentVx) < 0.5 && Math.abs(currentVy) < 0.5) {
+            setShapes(prev => prev.map(s => {
+              if (flyingIds.includes(s.id)) {
+                return { ...s, x: Math.round(s.x / 30) * 30, y: Math.round(s.y / 30) * 30 };
+              }
+              return s;
+            }));
+            sfx.playSnap();
+            snapshot();
+            calculateAccuracy();
+            glideFrameRef.current = null;
+            return;
+          }
+
+          setShapes(prev => prev.map(s => {
+            if (flyingIds.includes(s.id)) {
+              let nx = s.x + currentVx;
+              let ny = s.y + currentVy;
+              // Boundary Bounciness
+              if (nx < 30 || nx > CANVAS_SIZE - 30) currentVx *= -0.8;
+              if (ny < 30 || ny > CANVAS_SIZE - 30) currentVy *= -0.8;
+              nx = Math.max(30, Math.min(CANVAS_SIZE - 30, nx));
+              ny = Math.max(30, Math.min(CANVAS_SIZE - 30, ny));
+              return { ...s, x: nx, y: ny };
+            }
+            return s;
+          }));
+
+          glideFrameRef.current = requestAnimationFrame(glide);
+        };
+        glideFrameRef.current = requestAnimationFrame(glide);
+      } else {
+        snapshot(); // Record drag result static
+      }
       isDraggingShapesRef.current = false;
     }
     
@@ -491,6 +651,9 @@ export function CanvasWorkspace({
       if (key === 'c') { onSelectTool('circle'); return; }
       if (key === 's') { onSelectTool('square'); return; }
       if (key === 't') { onSelectTool('triangle'); return; }
+      if (key === 'h') { onSelectTool('hexagon'); return; }
+      if (key === 'e') { onSelectTool('semicircle'); return; }
+      if (key === 'x') { onSelectTool('slice'); return; }
       if (key === 'g') { setShowGrid(prev => !prev); return; }
 
       const applyOp = (op: OpType) => {

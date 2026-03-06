@@ -3,10 +3,10 @@
 // ============================================================================
 
 /** Available geometric primitive types */
-export type ShapeType = 'circle' | 'square' | 'triangle';
+export type ShapeType = 'circle' | 'square' | 'triangle' | 'semicircle' | 'hexagon';
 
 /** Active tool selection (select mode vs primitive mode) */
-export type ToolMode = 'select' | ShapeType;
+export type ToolMode = 'select' | 'slice' | ShapeType;
 
 /** Canvas composite operations used for Boolean logic */
 export type OpType = 'source-over' | 'destination-out' | 'destination-in' | 'xor';
@@ -20,6 +20,7 @@ export interface ShapeObj {
     size: number;
     rotation: number;
     op: OpType;
+    clipPlanes?: { px: number, py: number, nx: number, ny: number }[];
 }
 
 /** 

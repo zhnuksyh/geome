@@ -22,6 +22,19 @@ export const getShapePath = (type: ShapeType, size: number): Path2D => {
         path.lineTo(r * Math.sqrt(3) / 2, r / 2);
         path.lineTo(-r * Math.sqrt(3) / 2, r / 2);
         path.closePath();
+    } else if (type === 'semicircle') {
+        path.arc(0, 0, size, 0, Math.PI);
+        path.closePath();
+    } else if (type === 'hexagon') {
+        const r = size;
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - (Math.PI / 2); // Start at top
+            const x = r * Math.cos(angle);
+            const y = r * Math.sin(angle);
+            if (i === 0) path.moveTo(x, y);
+            else path.lineTo(x, y);
+        }
+        path.closePath();
     }
     return path;
 };
@@ -37,11 +50,27 @@ export const drawShape = (
     y: number,
     size: number,
     rotation: number = 0,
-    fillStyle: string = 'black'
+    fillStyle: string = 'black',
+    clipPlanes?: { px: number, py: number, nx: number, ny: number }[]
 ) => {
     ctx.globalCompositeOperation = op;
     ctx.fillStyle = fillStyle;
     ctx.save();
+
+    if (clipPlanes && clipPlanes.length > 0) {
+        clipPlanes.forEach(plane => {
+            ctx.beginPath();
+            ctx.translate(plane.px, plane.py);
+            const angle = Math.atan2(plane.ny, plane.nx);
+            ctx.rotate(angle);
+            // Normal points +X, so valid region is X >= 0
+            ctx.rect(0, -9999, 9999, 19998);
+            ctx.rotate(-angle);
+            ctx.translate(-plane.px, -plane.py);
+            ctx.clip();
+        });
+    }
+
     ctx.translate(x, y);
     ctx.rotate(rotation);
     ctx.fill(getShapePath(type, size));

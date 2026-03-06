@@ -1,4 +1,4 @@
-import { Circle, Square, Triangle, Combine, Minus, Target, Orbit, MousePointer2 } from 'lucide-react';
+import { Circle, Square, Triangle, Hexagon, PieChart, Combine, Minus, Target, Orbit, MousePointer2 } from 'lucide-react';
 import type { ToolMode, OpType } from '../types/game';
 import { sfx } from '../game/audio';
 
@@ -7,6 +7,7 @@ interface ToolPaletteProps {
   selectedOp: OpType;
   onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
+  onHoverOp: (op: OpType | null) => void;
 }
 
 const PRIMITIVES = [
@@ -14,6 +15,8 @@ const PRIMITIVES = [
   { id: 'circle' as ToolMode, icon: Circle, label: 'Circle', key: 'C' },
   { id: 'square' as ToolMode, icon: Square, label: 'Square', key: 'S' },
   { id: 'triangle' as ToolMode, icon: Triangle, label: 'Triangle', key: 'T' },
+  { id: 'hexagon' as ToolMode, icon: Hexagon, label: 'Hexagon', key: 'H' },
+  { id: 'semicircle' as ToolMode, icon: PieChart, label: 'Semi', key: 'E' },
 ];
 
 const OPERATIONS = [
@@ -23,7 +26,7 @@ const OPERATIONS = [
   { id: 'xor' as OpType, icon: Orbit, label: 'XOR', key: '4' },
 ];
 
-export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }: ToolPaletteProps) {
+export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, onHoverOp }: ToolPaletteProps) {
   return (
     <div className="mt-auto flex justify-center pointer-events-auto">
       <div className="bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-3 flex gap-6 items-center">
@@ -78,6 +81,8 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }
                     sfx.playClick();
                     onSelectOp(op.id);
                   }}
+                  onMouseEnter={() => onHoverOp(op.id)}
+                  onMouseLeave={() => onHoverOp(null)}
                   title={`${op.label} (${op.key})`}
                   className={`p-2 border-2 transition-transform duration-200 flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${

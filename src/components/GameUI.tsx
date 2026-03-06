@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Scissors } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -29,6 +29,7 @@ interface GameUIProps {
   onDuplicate: () => void;
   onDelete: () => void;
   onToggleGrid: () => void;
+  onHoverOp: (op: OpType | null) => void;
 }
 
 export function GameUI({
@@ -53,6 +54,7 @@ export function GameUI({
   onDuplicate,
   onDelete,
   onToggleGrid,
+  onHoverOp,
 }: GameUIProps) {
   const [isLevelSelectOpen, setIsLevelSelectOpen] = useState(false);
 
@@ -156,6 +158,9 @@ export function GameUI({
                 <p className="flex items-center justify-start gap-3 mb-2">
                   <Orbit size={12} className="text-[#1D3557]" /> [Space] Peek Target
                 </p>
+                <p className="flex items-center justify-start gap-3 mb-2">
+                  <Scissors size={12} className="text-[#E63946]" /> [X] Slicer Tool
+                </p>
                 <p className="flex items-center justify-start gap-3">
                   <Trash2 size={12} className="text-black" /> Del to Remove · Esc Deselect
                 </p>
@@ -170,6 +175,7 @@ export function GameUI({
           selectedOp={selectedOp}
           onSelectTool={onSelectTool}
           onSelectOp={onSelectOp}
+          onHoverOp={onHoverOp}
         />
       </div>
 

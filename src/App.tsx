@@ -24,6 +24,7 @@ export default function App() {
   const [gameState, setGameState] = useState<'menu' | 'playing'>('menu');
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
+  const [activeHoverOp, setActiveHoverOp] = useState<OpType | null>(null);
   const [activeShapeIds, setActiveShapeIds] = useState<string[]>([]);
   const [accuracy, setAccuracy] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
@@ -219,6 +220,7 @@ export default function App() {
         onToggleGrid={() => setShowGrid(!showGrid)}
         isAudioOn={isAudioOn}
         onToggleAudio={() => setIsAudioOn(!isAudioOn)}
+        onHoverOp={setActiveHoverOp}
       />
 
       {/* Canvas Workspace */}
@@ -231,6 +233,7 @@ export default function App() {
         activeTool={activeTool}
         setActiveTool={setActiveTool}
         selectedOp={selectedOp}
+        activeHoverOp={activeHoverOp}
         activeShapeIds={activeShapeIds}
         setActiveShapeIds={setActiveShapeIds}
         onAccuracyChange={setAccuracy}
