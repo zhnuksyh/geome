@@ -224,8 +224,11 @@ export function CanvasWorkspace({
   }, [renderGameCanvas, calculateAccuracy]);
 
   // ─── Pointer events ────────────────────────────────────────────────
-  const handleAddShape = (type: 'circle' | 'square' | 'triangle', x: number, y: number) => {
+  const handleAddShape = (type: 'circle' | 'square' | 'triangle', rawX: number, rawY: number) => {
     snapshot();
+    const x = Math.round(rawX / 30) * 30;
+    const y = Math.round(rawY / 30) * 30;
+
     const newShape: ShapeObj = {
       id: generateId(),
       type,
@@ -235,19 +238,9 @@ export function CanvasWorkspace({
       rotation: 0,
       op: selectedOp,
     };
-    
-    // Snap to target if very close when dropping
-    for (const t of targets) {
-      if (Math.hypot(t.x - x, t.y - y) < 20) {
-        newShape.x = t.x;
-        newShape.y = t.y;
-        break;
-      }
-    }
 
     setShapes((prev) => [...prev, newShape]);
     setActiveShapeIds([newShape.id]);
-    // Removed automatic tool revert to allow dropping multiple shapes
   };
 
   const toCanvasCoords = (clientX: number, clientY: number) => {
@@ -342,24 +335,6 @@ export function CanvasWorkspace({
     if (isDraggingShapesRef.current && activeShapeIds.length > 0 && dragStartPosRef.current) {
       const dx = mouseX - dragStartPosRef.current.x;
       const dy = mouseY - dragStartPosRef.current.y;
-      
-      // Look for snapping for the primary dragged shape (the first one selected)
-      let snapDx = 0;
-      let snapDy = 0;
-      const primaryDraggedOrig = activeShapeIds.length > 0 ? originalShapesRef.current.get(activeShapeIds[0]) : null;
-      
-      if (primaryDraggedOrig) {
-        const proposedX = primaryDraggedOrig.x + dx;
-        const proposedY = primaryDraggedOrig.y + dy;
-        
-        for (const t of targets) {
-          if (Math.hypot(t.x - proposedX, t.y - proposedY) < 15) { // 15px snap distance
-            snapDx = t.x - proposedX;
-            snapDy = t.y - proposedY;
-            break;
-          }
-        }
-      }
 
       setShapes((prev) =>
         prev.map((s) => {
@@ -367,14 +342,9 @@ export function CanvasWorkspace({
             const orig = originalShapesRef.current.get(s.id);
             if (!orig) return s;
 
-            let finalX = orig.x + dx + snapDx;
-            let finalY = orig.y + dy + snapDy;
-            
-            // If grid snapping is on, bind to 30px intervals (half of 60px grid bounds for centering flexibility)
-            if (showGrid) {
-              finalX = Math.round(finalX / 30) * 30;
-              finalY = Math.round(finalY / 30) * 30;
-            }
+            // Enforce rigid 30px interval lock-stepping
+            const finalX = Math.round((orig.x + dx) / 30) * 30;
+            const finalY = Math.round((orig.y + dy) / 30) * 30;
 
             return { ...s, x: finalX, y: finalY };
           }
