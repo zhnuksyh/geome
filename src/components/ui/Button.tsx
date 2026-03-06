@@ -10,9 +10,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles =
       "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50";
     const variants: Record<string, string> = {
-      default: "bg-black text-white shadow hover:bg-gray-800",
-      outline: "border border-gray-200 bg-white shadow-sm hover:bg-gray-100 text-black",
-      ghost: "hover:bg-gray-100 text-black",
+      default: "bg-[var(--text-color)] text-[var(--bg-color)] shadow hover:opacity-90",
+      outline: "border border-[var(--panel-border)] bg-[var(--panel-bg)] shadow-sm hover:bg-[var(--bg-color)] text-[var(--text-color)]",
+      ghost: "hover:bg-[var(--bg-color)] text-[var(--text-color)]",
     };
     const sizes: Record<string, string> = {
       default: "h-9 px-4 py-2",
