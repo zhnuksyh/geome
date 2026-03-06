@@ -238,7 +238,7 @@ export default function App() {
       <WinModal isOpen={isWinModalOpen} onNextLevel={handleNextLevel} />
 
       {/* Ambient Audio Player */}
-      <audio ref={audioRef} loop src="/audio/ambient-loop.wav" />
+      <audio ref={audioRef} loop src="/audio/ambient-loop.m4a" />
     </div>
   );
 }
