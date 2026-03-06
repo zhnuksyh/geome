@@ -1,5 +1,6 @@
 import { Circle, Square, Triangle, Combine, Minus, Target, Orbit, MousePointer2 } from 'lucide-react';
 import type { ToolMode, OpType } from '../types/game';
+import { sfx } from '../game/audio';
 
 interface ToolPaletteProps {
   activeTool: ToolMode;
@@ -38,7 +39,10 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }
               return (
                 <button
                   key={tool.id}
-                  onClick={() => onSelectTool(tool.id)}
+                  onClick={() => {
+                    sfx.playClick();
+                    onSelectTool(tool.id);
+                  }}
                   title={`${tool.label} (${tool.key})`}
                   className={`p-2 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${
@@ -70,7 +74,10 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp }
               return (
                 <button
                   key={op.id}
-                  onClick={() => onSelectOp(op.id)}
+                  onClick={() => {
+                    sfx.playClick();
+                    onSelectOp(op.id);
+                  }}
                   title={`${op.label} (${op.key})`}
                   className={`p-2 border-2 transition-transform duration-200 flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${

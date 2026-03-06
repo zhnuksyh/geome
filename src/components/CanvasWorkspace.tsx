@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import type { ToolMode, OpType, ShapeObj } from '../types/game';
 import { CANVAS_SIZE, getShapePath, drawShape, LEVELS, generateId } from '../game/levels';
+import { sfx } from '../game/audio';
 
 interface CanvasWorkspaceProps {
   shapes: ShapeObj[];
@@ -239,6 +240,7 @@ export function CanvasWorkspace({
       op: selectedOp,
     };
 
+    sfx.playSpawn();
     setShapes((prev) => [...prev, newShape]);
     setActiveShapeIds([newShape.id]);
   };
@@ -288,6 +290,7 @@ export function CanvasWorkspace({
       // Clicked a shape
       if (e.shiftKey) {
         // Toggle selection
+        sfx.playClick();
         setActiveShapeIds(prev => 
           prev.includes(foundId!) ? prev.filter(id => id !== foundId) : [...prev, foundId!]
         );
@@ -295,6 +298,7 @@ export function CanvasWorkspace({
         // If it's already selected, don't clear the others (so we can drag the group)
         // If it's not selected, make it the only selection
         if (!activeShapeIds.includes(foundId)) {
+          sfx.playClick();
           setActiveShapeIds([foundId]);
           const activeObj = shapes.find((s) => s.id === foundId);
           if (activeObj) onSelectOp(activeObj.op);
@@ -412,16 +416,13 @@ export function CanvasWorkspace({
         setShapes((prev) => {
           return prev.map(s => {
             if (activeShapeIds.includes(s.id)) {
+              sfx.playSnap();
               const activeShape = { ...s };
               if (e.shiftKey) {
-                if (showGrid) {
-                  // Snap to 15 degree increments
-                  const snapAngle = Math.PI / 12; 
-                  const dir = e.deltaY > 0 ? 1 : -1;
-                  activeShape.rotation += dir * snapAngle;
-                } else {
-                  activeShape.rotation += e.deltaY > 0 ? 0.08 : -0.08;
-                }
+                // Unconditionally snap to 15 degree increments to lock with 30px position constraints
+                const snapAngle = Math.PI / 12; 
+                const dir = e.deltaY > 0 ? 1 : -1;
+                activeShape.rotation += dir * snapAngle;
               } else {
                 // If grid is active, snap radius to 30 to lock onto 60 grid width
                 const delta = e.deltaY > 0 ? (showGrid ? -30 : -4) : (showGrid ? 30 : 4);
@@ -479,6 +480,7 @@ export function CanvasWorkspace({
         if (e.key === 'Backspace') e.preventDefault();
         if (activeShapeIds.length > 0) {
           snapshot();
+          sfx.playSlice();
           setShapes((prev) => prev.filter((s) => !activeShapeIds.includes(s.id)));
           setActiveShapeIds([]);
         }
@@ -493,12 +495,6 @@ export function CanvasWorkspace({
 
       const applyOp = (op: OpType) => {
         onSelectOp(op);
-        if (activeShapeIds.length > 0) {
-          snapshot();
-          setShapes((prev) =>
-            prev.map((s) => (activeShapeIds.includes(s.id) ? { ...s, op } : s))
-          );
-        }
       };
 
       if (key === '1') applyOp('source-over');

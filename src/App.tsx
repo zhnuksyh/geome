@@ -7,6 +7,7 @@ import { GameUI } from './components/GameUI';
 import { CanvasWorkspace } from './components/CanvasWorkspace';
 import { WinModal } from './components/WinModal';
 import { MainMenu } from './components/MainMenu';
+import { sfx } from './game/audio';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
 
   // ─── Audio Control ─────────────────────────────────────────────────
   useEffect(() => {
+    sfx.setEnabled(isAudioOn);
     if (audioRef.current) {
       if (isAudioOn) {
         audioRef.current.play().catch(e => console.log("Audio play blocked by browser:", e));
@@ -66,10 +68,12 @@ export default function App() {
     snapshot();
     setShapes([]);
     setActiveShapeIds([]);
+    sfx.playSlice();
   }, [setShapes, snapshot]);
 
   const handleFinalize = useCallback(() => {
     if (accuracy >= 95.0) {
+      sfx.playSuccess();
       confetti({
         particleCount: 150,
         spread: 70,
@@ -106,6 +110,11 @@ export default function App() {
       setSelectedOp(op);
       if (activeShapeIds.length > 0) {
         snapshot();
+        sfx.playSlice();
+        if (containerRef.current) {
+          containerRef.current.classList.add('animate-shake');
+          setTimeout(() => containerRef.current?.classList.remove('animate-shake'), 200);
+        }
         setShapes((prev) =>
           prev.map((s) => (activeShapeIds.includes(s.id) ? { ...s, op } : s))
         );
