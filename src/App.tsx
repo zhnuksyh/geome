@@ -29,6 +29,7 @@ export default function App() {
   const [activeHoverOp, setActiveHoverOp] = useState<OpType | null>(null);
   const [activeShapeIds, setActiveShapeIds] = useState<string[]>([]);
   const [accuracy, setAccuracy] = useState<number>(0);
+  const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(false);
 
@@ -58,6 +59,17 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // ─── Timer ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    let timer: number;
+    if (gameState === 'playing') {
+      timer = window.setInterval(() => {
+        setTimeElapsed((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [gameState]);
 
   // ─── Audio Control ─────────────────────────────────────────────────
   useEffect(() => {
@@ -104,7 +116,9 @@ export default function App() {
   const handleNextLevel = useCallback(() => {
     setIsWinModalOpen(false);
     setShapes([]);
+    setTimeElapsed(0);
     setCurrentLevel((prev) => prev + 1);
+    setGameState('playing');
   }, [setShapes, setCurrentLevel]);
 
   const handleSelectLevel = useCallback((levelIndex: number) => {
@@ -112,7 +126,9 @@ export default function App() {
     setShapes([]);
     setActiveShapeIds([]);
     setMoves(0);
+    setTimeElapsed(0);
     setCurrentLevel(levelIndex);
+    setGameState('playing');
   }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot, setMoves]);
 
   const handleSelectOp = useCallback(
@@ -234,6 +250,7 @@ export default function App() {
         maxUnlockedLevel={maxUnlockedLevel}
         accuracy={accuracy}
         moves={moves}
+        timeElapsed={timeElapsed}
         showGrid={showGrid}
         activeTool={activeTool}
         selectedOp={selectedOp}

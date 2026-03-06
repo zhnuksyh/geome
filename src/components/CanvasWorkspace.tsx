@@ -276,6 +276,7 @@ export function CanvasWorkspace({
     sfx.playSpawn();
     setShapes((prev) => [...prev, newShape]);
     setActiveShapeIds([newShape.id]);
+    onSelectTool('select');
   };
 
   const toCanvasCoords = (clientX: number, clientY: number) => {

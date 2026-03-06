@@ -5,6 +5,7 @@ import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
 import { LayerPanel } from './LayerPanel';
 import { LevelSelectModal } from './LevelSelectModal';
+import { LEVELS } from '../game/levels';
 import type { ToolMode, OpType, ShapeObj } from '../types/game';
 
 interface GameUIProps {
@@ -12,6 +13,7 @@ interface GameUIProps {
   maxUnlockedLevel: number;
   accuracy: number;
   moves: number;
+  timeElapsed: number;
   showGrid: boolean;
   activeTool: ToolMode;
   selectedOp: OpType;
@@ -40,6 +42,7 @@ export function GameUI({
   maxUnlockedLevel,
   accuracy,
   moves,
+  timeElapsed,
   showGrid,
   activeTool,
   selectedOp,
@@ -64,12 +67,27 @@ export function GameUI({
 }: GameUIProps) {
   const [isLevelSelectOpen, setIsLevelSelectOpen] = useState(false);
 
+  // Parse time
+  const mins = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+  const secs = (timeElapsed % 60).toString().padStart(2, '0');
+
+  // Par logic
+  const levelIndex = currentLevel % LEVELS.length;
+  const levelData = LEVELS[levelIndex];
+  const { bronze, silver, gold } = levelData.par || { bronze: 99, silver: 99, gold: 99 };
+  
+  let medalColor = "text-[var(--text-color)] opacity-60";
+  if (moves <= gold) medalColor = "text-[var(--accent-yellow)]";
+  else if (moves <= silver) medalColor = "text-[#A8AADC]";
+  else if (moves <= bronze) medalColor = "text-[#CD7F32]";
+  else medalColor = "text-[var(--accent-red)]";
+
   return (
     <>
       <div className="fixed inset-0 z-10 flex flex-col p-8 pointer-events-none justify-between">
         
         {/* Top Section */}
-        <div className="flex justify-between items-start w-full">
+        <div className="flex justify-between items-start w-full relative">
           
           {/* Left Column (Score Panel + Layers) */}
           <div className="flex flex-col gap-6 w-80 pointer-events-auto">
@@ -94,14 +112,47 @@ export function GameUI({
             )}
           </div>
 
-          {/* Right Column (Actions + Instructions) */}
-          <div className="flex flex-col gap-6 items-end pointer-events-auto">
-            <div className="flex flex-col gap-3 w-[260px]">
-              <button onClick={onFinalize} className="relative group block pointer-events-auto w-full">
-                <div className="absolute inset-0 bg-[var(--text-color)] translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
-                <div className="relative bg-[var(--accent-red)] text-[var(--bg-color)] border-2 border-[var(--panel-border)] px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5">
-                  Finalize Form
+          {/* Center Action Par & Timer */}
+          <div className="absolute left-1/2 -translate-x-1/2 pointer-events-auto">
+            <div className="flex bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] items-center h-16">
+              
+              {/* Timer */}
+              <div className="flex flex-col items-center justify-center px-6 min-w-[100px]">
+                <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase tracking-widest mb-0.5">Time</span>
+                <span className="font-mono text-xl font-black text-[var(--text-color)] leading-none">{mins}:{secs}</span>
+              </div>
+
+              {/* Divider */}
+              <div className="w-[4px] h-full bg-[var(--panel-border)]" />
+
+              {/* Action Par */}
+              <div className="flex flex-col items-center justify-center px-6 min-w-[140px]">
+                <div className="flex justify-between w-full items-end gap-4">
+                  <div className="flex flex-col text-left">
+                    <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase tracking-widest leading-none mb-1">Action Par</span>
+                    <div className="flex gap-2 text-[10px] font-mono font-bold tracking-tighter leading-none">
+                      <span className="text-[var(--accent-yellow)]">G:{gold}</span>
+                      <span className="text-[#A8AADC]">S:{silver}</span>
+                      <span className="text-[#CD7F32]">B:{bronze}</span>
+                    </div>
+                  </div>
+                  <span className={`font-mono text-xl font-black leading-none ${medalColor}`}>
+                    {moves}
+                  </span>
                 </div>
+              </div>
+
+            </div>
+          </div>
+
+      {/* Right Column (Actions + Instructions) */}
+      <div className="flex flex-col gap-6 items-end pointer-events-auto">
+        <div className="flex flex-col gap-3 w-[260px]">
+          <button onClick={onFinalize} className="relative group block pointer-events-auto w-full">
+            <div className="absolute inset-0 bg-[var(--text-color)] translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
+            <div className="relative bg-[var(--accent-red)] text-[var(--bg-color)] border-2 border-[var(--panel-border)] px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5">
+              Finalize Form
+            </div>
               </button>
               <div className="flex justify-between w-full mt-2">
                 <Button
