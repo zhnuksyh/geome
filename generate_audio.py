@@ -34,7 +34,7 @@ def generate_loop(filename="public/audio/ambient-loop.wav"):
             phase_offset = math.sin(2 * math.pi * t * (0.1 * (idx+1))) * 0.02
             sample += math.sin(2 * math.pi * (f + phase_offset) * t)
             
-        sample = (sample / len(freqs)) * lfo_amp * 0.15 # Quiet ambient background
+        sample = (sample / len(freqs)) * lfo_amp * 0.8 # Master volume boosted
         
         # Convert to 16-bit integer
         int_sample = int(sample * 32767.0)
