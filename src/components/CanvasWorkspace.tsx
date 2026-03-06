@@ -52,6 +52,7 @@ export function CanvasWorkspace({
   const lastCalcTimeRef = useRef(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [isPeeking, setIsPeeking] = useState(false);
 
   const targets = LEVELS[currentLevel % LEVELS.length].targetShapes;
 
@@ -104,10 +105,23 @@ export function CanvasWorkspace({
     shapes.forEach((s, index) => {
       // Force the very first shape to always be source-over so it's never invisible
       const actualOp = index === 0 ? 'source-over' : s.op;
+      
+      // Handle Target Visibility Opacity for individual dragging
+      if (isDraggingShapesRef.current && activeShapeIds.includes(s.id)) {
+        bCtx.globalAlpha = 0.5; // Make only the dragged/scrolled item translucent to see target intersection
+      } else {
+        bCtx.globalAlpha = 1.0; 
+      }
+
       drawShape(bCtx, s.type, actualOp, s.x, s.y, s.size, s.rotation, "black");
+      bCtx.globalAlpha = 1.0; // Reset for standard operations
     });
 
+    if (isPeeking) {
+      ctx.globalAlpha = 0.15; // Ghost all accumulated player geometry flattening
+    }
     ctx.drawImage(buffer, 0, 0);
+    ctx.globalAlpha = 1.0;
 
     // Draw Grid overlay if toggled
     if (showGrid) {
@@ -467,6 +481,7 @@ export function CanvasWorkspace({
       }
 
       if (e.key === 'Escape') { setActiveShapeIds([]); return; }
+      if (e.code === 'Space') { e.preventDefault(); setIsPeeking(true); return; }
 
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (e.key === 'Backspace') e.preventDefault();
@@ -518,12 +533,20 @@ export function CanvasWorkspace({
         return;
       }
     };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space') { setIsPeeking(false); }
+    };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
   }, [
     activeShapeIds, calculateAccuracy, setShapes, setActiveShapeIds, onSelectTool, onSelectOp,
-    snapshot, undo, redo, onClear, shapes, setActiveTool, setShowGrid
+    snapshot, undo, redo, onClear, shapes, setActiveTool, setShowGrid, setIsPeeking
   ]);
 
   return (
