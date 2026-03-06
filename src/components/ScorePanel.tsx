@@ -40,9 +40,9 @@ export function ScorePanel({ currentLevel, accuracy, moves, onOpenLevelSelect }:
       </button>
 
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-end border-b-2 border-dashed border-gray-200 pb-2 mb-2">
+        <div className="flex justify-between items-end border-b-2 border-dashed border-[var(--grid-color)] pb-2 mb-2">
           <div className="flex flex-col gap-1 text-left">
-            <span className="text-[10px] font-bold text-gray-500 uppercase">Action Par</span>
+            <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase">Action Par</span>
             <div className="flex gap-2 text-[8px] font-mono tracking-tighter">
               <span className="text-[var(--accent-yellow)]">G:{gold}</span>
               <span className="text-[#A8AADC]">S:{silver}</span>
@@ -55,7 +55,7 @@ export function ScorePanel({ currentLevel, accuracy, moves, onOpenLevelSelect }:
         </div>
 
         <div className="flex justify-between items-end">
-          <span className="text-[10px] font-bold text-gray-500 uppercase">Match Precision</span>
+          <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase">Match Precision</span>
           <span
             className={`font-mono text-xl font-bold ${
               accuracy >= 95 ? 'text-[var(--accent-green)] animate-pulse' : 'text-[var(--text-color)]'

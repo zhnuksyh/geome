@@ -18,9 +18,9 @@
 [data-theme="dark"] {
   --bg-color: #1a1a1a;
   --text-color: #e5e5e5;
-  --grid-color: #333333;
-  --panel-bg: #2a2a2a;
-  --panel-border: #555555;
+  --grid-color: #2a2a2a;
+  --panel-bg: #222222;
+  --panel-border: #444444;
   --accent-red: #ff5e6d;
   --accent-yellow: #ffc940;
   --accent-blue: #457b9d;
@@ -31,14 +31,14 @@
 [data-theme="neon"] {
   --bg-color: #0b0c10;
   --text-color: #66fcf1;
-  --grid-color: #1f2833;
-  --panel-bg: #0b0c10;
+  --grid-color: #121318;
+  --panel-bg: #121318;
   --panel-border: #45a29e;
   --accent-red: #ff0055;
   --accent-yellow: #fce300;
   --accent-blue: #00f0ff;
   --accent-green: #00ff66;
-  --shadow-color: #45a29e;
+  --shadow-color: rgba(69, 162, 158, 0.4);
 }
 
 body {

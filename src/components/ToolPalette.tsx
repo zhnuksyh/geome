@@ -32,7 +32,7 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
       <div className="bg-[var(--panel-bg)] border-[3px] border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] p-3 flex gap-6 items-center">
         {/* Primitives / Tools */}
         <div className="flex flex-col gap-2">
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter text-center">
+          <span className="text-[9px] font-bold text-[var(--text-color)] opacity-50 uppercase tracking-tighter text-center">
             Tools
           </span>
           <div className="flex gap-2">
@@ -67,7 +67,7 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
 
         {/* Boolean Operations */}
         <div className="flex flex-col gap-2">
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter text-center">
+          <span className="text-[9px] font-bold text-[var(--text-color)] opacity-50 uppercase tracking-tighter text-center">
             Boolean Logic
           </span>
           <div className="flex gap-2">

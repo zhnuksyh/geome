@@ -53,10 +53,10 @@ export function LevelSelectModal({
                 return (
                   <div 
                     key={index}
-                    className="relative bg-gray-200 border-2 border-gray-400 p-6 flex flex-col items-center justify-center aspect-square opacity-60 pointer-events-none"
+                    className="relative bg-[var(--bg-color)] border-2 border-[var(--panel-border)] p-6 flex flex-col items-center justify-center aspect-square opacity-50 pointer-events-none"
                   >
-                    <Lock className="w-8 h-8 text-gray-500 mb-2" />
-                    <span className="text-xs font-bold text-gray-500 tracking-widest uppercase">Locked</span>
+                    <Lock className="w-8 h-8 text-[var(--text-color)] opacity-50 mb-2" />
+                    <span className="text-xs font-bold text-[var(--text-color)] opacity-50 tracking-widest uppercase">Locked</span>
                   </div>
                 );
               }

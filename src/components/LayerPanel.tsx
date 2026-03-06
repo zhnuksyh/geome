@@ -75,7 +75,7 @@ export function LayerPanel({
                 <div className="text-xs font-bold uppercase truncate">
                   {shape.type} {trueIndex + 1}
                 </div>
-                <div className="text-[9px] opacity-70 flex items-center gap-1 uppercase tracking-wider">
+                <div className="text-[9px] text-[var(--text-color)] opacity-70 flex items-center gap-1 uppercase tracking-wider">
                   <OpIcon op={isBaseLayer ? 'source-over' : shape.op} className="w-3 h-3" />
                   {isBaseLayer ? 'Base (Union)' : OpLabel(shape.op)}
                 </div>
