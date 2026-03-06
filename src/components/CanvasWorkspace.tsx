@@ -310,16 +310,16 @@ export function CanvasWorkspace({
       // Look for snapping for the primary dragged shape (the first one selected)
       let snapDx = 0;
       let snapDy = 0;
-      const primaryDraggedShape = shapes.find(s => s.id === activeShapeIds[0]);
+      const primaryDraggedOrig = activeShapeIds.length > 0 ? originalShapesRef.current.get(activeShapeIds[0]) : null;
       
-      if (primaryDraggedShape) {
-        const proposedX = primaryDraggedShape.x + dx;
-        const proposedY = primaryDraggedShape.y + dy;
+      if (primaryDraggedOrig) {
+        const proposedX = primaryDraggedOrig.x + dx;
+        const proposedY = primaryDraggedOrig.y + dy;
         
         for (const t of targets) {
           if (Math.hypot(t.x - proposedX, t.y - proposedY) < 15) { // 15px snap distance
-            snapDx = t.x - primaryDraggedShape.x - dx;
-            snapDy = t.y - primaryDraggedShape.y - dy;
+            snapDx = t.x - proposedX;
+            snapDy = t.y - proposedY;
             break;
           }
         }
@@ -345,8 +345,6 @@ export function CanvasWorkspace({
           return s;
         })
       );
-      
-      dragStartPosRef.current = { x: mouseX, y: mouseY };
 
       const now = performance.now();
       if (now - lastCalcTimeRef.current > 100) {
