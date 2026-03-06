@@ -80,6 +80,7 @@ export const drawShape = (
 export const LEVELS: LevelDef[] = [
     {
         title: "Vesica Piscis",
+        par: { bronze: 5, silver: 3, gold: 2 },
         targetShapes: [
             { type: 'circle', op: 'source-over', x: 270, y: 300, size: 90, rotation: 0 },
             { type: 'circle', op: 'destination-in', x: 330, y: 300, size: 90, rotation: 0 }
@@ -87,6 +88,7 @@ export const LEVELS: LevelDef[] = [
     },
     {
         title: "Lunar Subtract",
+        par: { bronze: 5, silver: 3, gold: 2 },
         targetShapes: [
             { type: 'circle', op: 'source-over', x: 300, y: 300, size: 120, rotation: 0 },
             { type: 'circle', op: 'destination-out', x: 330, y: 270, size: 90, rotation: 0 }
@@ -94,6 +96,7 @@ export const LEVELS: LevelDef[] = [
     },
     {
         title: "The XOR Eye",
+        par: { bronze: 5, silver: 3, gold: 2 },
         targetShapes: [
             { type: 'square', op: 'source-over', x: 300, y: 300, size: 120, rotation: Math.PI / 4 },
             { type: 'circle', op: 'xor', x: 300, y: 300, size: 60, rotation: 0 }

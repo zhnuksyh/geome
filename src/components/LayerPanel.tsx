@@ -47,8 +47,8 @@ export function LayerPanel({
   if (shapes.length === 0) return null;
 
   return (
-    <div className="flex flex-col bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-[320px] max-h-[calc(100vh-320px)]">
-      <div className="bg-black text-white p-2 text-center text-[10px] font-bold tracking-widest uppercase">
+    <div className="flex flex-col bg-[var(--panel-bg)] border-[3px] border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] w-[320px] max-h-[calc(100vh-320px)]">
+      <div className="bg-[var(--text-color)] text-[var(--bg-color)] p-2 text-center text-[10px] font-bold tracking-widest uppercase">
         Layers
       </div>
 
@@ -66,8 +66,8 @@ export function LayerPanel({
               onClick={(e) => onSelectShape(shape.id, e.shiftKey)}
               className={`flex items-center gap-3 p-2 text-left border-2 transition-colors cursor-pointer ${
                 isSelected
-                  ? 'bg-black text-white border-black'
-                  : 'bg-white border-transparent hover:border-black text-black'
+                  ? 'bg-[var(--text-color)] text-[var(--panel-bg)] border-[var(--panel-border)]'
+                  : 'bg-[var(--panel-bg)] border-transparent hover:border-[var(--text-color)] text-[var(--text-color)]'
               }`}
             >
               <ShapeIcon type={shape.type} className="w-4 h-4 shrink-0" />
@@ -86,7 +86,7 @@ export function LayerPanel({
       </div>
 
       {/* Action Bar */}
-      <div className="p-2 border-t-[3px] border-black bg-gray-50 flex justify-between gap-1 relative z-10">
+      <div className="p-2 border-t-[3px] border-[var(--panel-border)] bg-[var(--bg-color)] flex justify-between gap-1 relative z-10">
         <div className="flex gap-1">
           <Button
             variant="ghost"
@@ -94,7 +94,7 @@ export function LayerPanel({
             onClick={onMoveUp}
             disabled={activeShapeIds.length === 0}
             title="Move Layer Up ([)"
-            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-black hover:bg-white"
+            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-[var(--text-color)] hover:bg-[var(--panel-bg)] text-[var(--text-color)]"
           >
             <ArrowUp size={14} />
           </Button>
@@ -104,7 +104,7 @@ export function LayerPanel({
             onClick={onMoveDown}
             disabled={activeShapeIds.length === 0}
             title="Move Layer Down (])"
-            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-black hover:bg-white"
+            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-[var(--text-color)] hover:bg-[var(--panel-bg)] text-[var(--text-color)]"
           >
             <ArrowDown size={14} />
           </Button>
@@ -116,7 +116,7 @@ export function LayerPanel({
             onClick={onDuplicate}
             disabled={activeShapeIds.length === 0}
             title="Duplicate Selected (Ctrl+D)"
-            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-black hover:bg-white text-blue-600 hover:text-blue-700"
+            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-[var(--text-color)] hover:bg-[var(--panel-bg)] text-[var(--accent-blue)]"
           >
             <Copy size={14} />
           </Button>
@@ -126,7 +126,7 @@ export function LayerPanel({
             onClick={onDelete}
             disabled={activeShapeIds.length === 0}
             title="Delete Selected (Del)"
-            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-black hover:bg-white text-red-600 hover:text-red-700"
+            className="w-8 h-8 rounded-none border-2 border-transparent hover:border-[var(--text-color)] hover:bg-[var(--panel-bg)] text-[var(--accent-red)]"
           >
             <Trash2 size={14} />
           </Button>

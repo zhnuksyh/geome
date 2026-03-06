@@ -29,5 +29,6 @@ export interface ShapeObj {
  */
 export interface LevelDef {
     title: string;
+    par: { bronze: number, silver: number, gold: number };
     targetShapes: Omit<ShapeObj, "id">[];
 }

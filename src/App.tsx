@@ -16,6 +16,8 @@ export default function App() {
   const [maxUnlockedLevel, setMaxUnlockedLevel] = useLocalStorage('geome_max_level', 0);
   const [shapes, setShapes] = useLocalStorage<ShapeObj[]>('geome_shapes', []);
   const [showGrid, setShowGrid] = useLocalStorage('geome_grid', false);
+  const [moves, setMoves] = useLocalStorage('geome_moves', 0);
+  const [theme, setTheme] = useLocalStorage<'light' | 'dark' | 'neon'>('geome_theme', 'light');
 
   // ─── History (Undo / Redo) ─────────────────────────────────────────
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
@@ -52,6 +54,11 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ─── Theme Sync ────────────────────────────────────────────────────
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
   // ─── Audio Control ─────────────────────────────────────────────────
   useEffect(() => {
     sfx.setEnabled(isAudioOn);
@@ -69,8 +76,9 @@ export default function App() {
     snapshot();
     setShapes([]);
     setActiveShapeIds([]);
+    setMoves(0);
     sfx.playSlice();
-  }, [setShapes, snapshot]);
+  }, [setShapes, snapshot, setMoves]);
 
   const handleFinalize = useCallback(() => {
     if (accuracy >= 95.0) {
@@ -103,8 +111,9 @@ export default function App() {
     snapshot();
     setShapes([]);
     setActiveShapeIds([]);
+    setMoves(0);
     setCurrentLevel(levelIndex);
-  }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot]);
+  }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot, setMoves]);
 
   const handleSelectOp = useCallback(
     (op: OpType) => {
@@ -119,9 +128,10 @@ export default function App() {
         setShapes((prev) =>
           prev.map((s) => (activeShapeIds.includes(s.id) ? { ...s, op } : s))
         );
+        setMoves(m => m + 1);
       }
     },
-    [activeShapeIds, setShapes, snapshot]
+    [activeShapeIds, setShapes, snapshot, setMoves]
   );
   
   // ─── Shape Panel Actions ───────────────────────────────────────────
@@ -183,13 +193,14 @@ export default function App() {
     snapshot();
     setShapes(prev => prev.filter(s => !activeShapeIds.includes(s.id)));
     setActiveShapeIds([]);
-  }, [activeShapeIds, setShapes, snapshot]);
+    setMoves(m => m + 1);
+  }, [activeShapeIds, setShapes, snapshot, setMoves]);
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen w-full bg-[#f8f8f8] font-sans overflow-hidden select-none"
+      className="flex items-center justify-center min-h-screen w-full bg-[var(--bg-color)] font-sans overflow-hidden select-none"
       style={{
-        backgroundImage: 'radial-gradient(#d1d1d1 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(var(--grid-color) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
       }}
     >
@@ -202,6 +213,7 @@ export default function App() {
         currentLevel={currentLevel}
         maxUnlockedLevel={maxUnlockedLevel}
         accuracy={accuracy}
+        moves={moves}
         showGrid={showGrid}
         activeTool={activeTool}
         selectedOp={selectedOp}
@@ -221,6 +233,8 @@ export default function App() {
         isAudioOn={isAudioOn}
         onToggleAudio={() => setIsAudioOn(!isAudioOn)}
         onHoverOp={setActiveHoverOp}
+        theme={theme}
+        onThemeChange={setTheme}
       />
 
       {/* Canvas Workspace */}
@@ -247,7 +261,12 @@ export default function App() {
       />
 
       {/* Win Modal */}
-      <WinModal isOpen={isWinModalOpen} onNextLevel={handleNextLevel} />
+      <WinModal 
+        isOpen={isWinModalOpen} 
+        onNextLevel={handleNextLevel} 
+        moves={moves}
+        par={LEVELS[currentLevel % LEVELS.length].par}
+      />
 
       {/* Ambient Audio Player */}
       <audio ref={audioRef} loop src="/audio/ambient-loop.m4a" />

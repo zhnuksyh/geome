@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Scissors } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Scissors, Moon, Sun, Zap } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -11,11 +11,14 @@ interface GameUIProps {
   currentLevel: number;
   maxUnlockedLevel: number;
   accuracy: number;
+  moves: number;
   showGrid: boolean;
   activeTool: ToolMode;
   selectedOp: OpType;
   shapes: ShapeObj[];
   activeShapeIds: string[];
+  theme: 'light' | 'dark' | 'neon';
+  onThemeChange: (theme: 'light' | 'dark' | 'neon') => void;
   isAudioOn: boolean;
   onToggleAudio: () => void;
   onSelectTool: (tool: ToolMode) => void;
@@ -36,11 +39,14 @@ export function GameUI({
   currentLevel,
   maxUnlockedLevel,
   accuracy,
+  moves,
   showGrid,
   activeTool,
   selectedOp,
   shapes,
   activeShapeIds,
+  theme,
+  onThemeChange,
   isAudioOn,
   onToggleAudio,
   onSelectTool,
@@ -69,7 +75,8 @@ export function GameUI({
           <div className="flex flex-col gap-6 w-80 pointer-events-auto">
             <ScorePanel 
               currentLevel={currentLevel} 
-              accuracy={accuracy} 
+              accuracy={accuracy}
+              moves={moves}
               onOpenLevelSelect={() => setIsLevelSelectOpen(true)} 
             />
             {shapes.length > 0 && (
@@ -91,8 +98,8 @@ export function GameUI({
           <div className="flex flex-col gap-6 items-end pointer-events-auto">
             <div className="flex flex-col gap-3 w-[260px]">
               <button onClick={onFinalize} className="relative group block pointer-events-auto w-full">
-                <div className="absolute inset-0 bg-black translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
-                <div className="relative bg-[#E63946] text-white border-2 border-black px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5">
+                <div className="absolute inset-0 bg-[var(--text-color)] translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
+                <div className="relative bg-[var(--accent-red)] text-[var(--bg-color)] border-2 border-[var(--panel-border)] px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5">
                   Finalize Form
                 </div>
               </button>
@@ -109,7 +116,7 @@ export function GameUI({
                   variant="ghost"
                   size="sm"
                   onClick={onToggleAudio}
-                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${isAudioOn ? "text-[#E63946] opacity-100" : "opacity-50"} hover:opacity-100 flex-1 flex justify-center items-center`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${isAudioOn ? "text-[var(--accent-red)] opacity-100" : "opacity-50"} hover:opacity-100 flex-1 flex justify-center items-center`}
                   title={isAudioOn ? "Mute Music" : "Play Ambient Music"}
                 >
                   {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
@@ -117,8 +124,21 @@ export function GameUI({
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => {
+                    if (theme === 'light') onThemeChange('dark');
+                    else if (theme === 'dark') onThemeChange('neon');
+                    else onThemeChange('light');
+                  }}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 opacity-100 text-[var(--accent-yellow)] hover:opacity-100 flex-1 flex justify-center items-center`}
+                  title="Toggle Theme"
+                >
+                  {theme === 'light' ? <Sun size={14} /> : theme === 'dark' ? <Moon size={14} /> : <Zap size={14} />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={onClear}
-                  className="text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 hover:text-[#E63946] flex-1"
+                  className="text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 hover:text-[var(--accent-red)] flex-1"
                 >
                   Clear All
                 </Button>
@@ -126,43 +146,43 @@ export function GameUI({
             </div>
 
             {/* Instructions Panel Card */}
-            <div className="bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 flex flex-col gap-3 text-left mt-2 w-[260px]">
-              <div className="text-[10px] leading-relaxed text-gray-500 uppercase font-bold">
+            <div className="bg-[var(--panel-bg)] border-[3px] border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] p-4 flex flex-col gap-3 text-left mt-2 w-[260px]">
+              <div className="text-[10px] leading-relaxed text-[var(--text-color)] opacity-80 uppercase font-bold">
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Keyboard size={12} className="text-black" /> V Select · C S T Tools
+                  <Keyboard size={12} className="text-[var(--text-color)]" /> V Select · C S T Tools
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Keyboard size={12} className="text-black" /> 1 2 3 4 Operations
+                  <Keyboard size={12} className="text-[var(--text-color)]" /> 1 2 3 4 Operations
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Grid size={12} className="text-black" /> G Toggle Snap Grid
+                  <Grid size={12} className="text-[var(--text-color)]" /> G Toggle Snap Grid
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Orbit size={12} className="text-[#E63946]" /> Drag to Select/Move
+                  <Orbit size={12} className="text-[var(--accent-red)]" /> Drag to Select/Move
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Layers size={12} className="text-[#E63946]" /> Scroll to Resize
+                  <Layers size={12} className="text-[var(--accent-red)]" /> Scroll to Resize
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <RotateCw size={12} className="text-[#E63946]" /> Shift+Scroll to Rotate
+                  <RotateCw size={12} className="text-[var(--accent-red)]" /> Shift+Scroll to Rotate
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Layers size={12} className="text-[#FFB703]" /> [ ] Reorder Layers
+                  <Layers size={12} className="text-[var(--accent-yellow)]" /> [ ] Reorder Layers
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Copy size={12} className="text-[#FFB703]" /> Ctrl+D Duplicate
+                  <Copy size={12} className="text-[var(--accent-yellow)]" /> Ctrl+D Duplicate
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Undo2 size={12} className="text-[#1D3557]" /> Ctrl+Z / Ctrl+Shift+Z
+                  <Undo2 size={12} className="text-[var(--accent-blue)]" /> Ctrl+Z / Ctrl+Shift+Z
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Orbit size={12} className="text-[#1D3557]" /> [Space] Peek Target
+                  <Orbit size={12} className="text-[var(--accent-blue)]" /> [Space] Peek Target
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Scissors size={12} className="text-[#E63946]" /> [X] Slicer Tool
+                  <Scissors size={12} className="text-[var(--accent-red)]" /> [X] Slicer Tool
                 </p>
                 <p className="flex items-center justify-start gap-3">
-                  <Trash2 size={12} className="text-black" /> Del to Remove · Esc Deselect
+                  <Trash2 size={12} className="text-[var(--text-color)]" /> Del to Remove · Esc Deselect
                 </p>
               </div>
             </div>

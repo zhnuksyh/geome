@@ -27,16 +27,16 @@ export function LevelSelectModal({
       />
       
       {/* Modal */}
-      <div className="relative bg-[#f8f8f8] border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] w-full max-w-3xl max-h-[85vh] flex flex-col">
+      <div className="relative bg-[var(--bg-color)] border-[4px] border-[var(--panel-border)] shadow-[12px_12px_0px_0px_var(--shadow-color)] w-full max-w-3xl max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="bg-black text-white p-4 flex justify-between items-center">
+        <div className="bg-[var(--text-color)] text-[var(--bg-color)] p-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <Goal className="w-6 h-6 text-[#FFB703]" />
-            <h2 className="text-xl font-black tracking-widest uppercase">Select Level</h2>
+            <Goal className="w-6 h-6 text-[var(--accent-yellow)]" />
+            <h2 className="text-xl font-black tracking-widest uppercase text-[var(--bg-color)]">Select Level</h2>
           </div>
           <button 
             onClick={onClose}
-            className="hover:bg-white hover:text-black transition-colors rounded-none p-1"
+            className="hover:opacity-75 transition-opacity rounded-none p-1 text-[var(--bg-color)]"
           >
             <X size={24} strokeWidth={3} />
           </button>
@@ -64,20 +64,20 @@ export function LevelSelectModal({
               return (
                 <div key={index} className="relative aspect-square group">
                   {/* Fake background for shadow impression without actually moving layout */}
-                  <div className="absolute inset-0 bg-black left-1 top-1" />
+                  <div className="absolute inset-0 bg-[var(--text-color)] left-1 top-1" />
                   <button
                     onClick={() => {
                       onSelectLevel(index);
                       onClose();
                     }}
-                    className={`absolute inset-0 flex flex-col items-center justify-center p-4 text-center transition-all border-2 border-black
+                    className={`absolute inset-0 flex flex-col items-center justify-center p-4 text-center transition-all border-2 border-[var(--panel-border)]
                       ${
                         isActive
-                          ? 'bg-black text-[#FFB703] border-black translate-x-1 translate-y-1'
-                          : 'bg-white text-black hover:bg-gray-50 hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]'
+                          ? 'bg-[var(--text-color)] text-[var(--accent-yellow)] border-[var(--panel-border)] translate-x-1 translate-y-1'
+                          : 'bg-[var(--panel-bg)] text-[var(--text-color)] hover:opacity-90 hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_var(--shadow-color)] group-hover:shadow-[8px_8px_0px_0px_var(--shadow-color)]'
                       }`}
                   >
-                    <div className={`text-base font-black tracking-widest uppercase mb-1 ${isActive ? "text-white" : ""}`}>
+                    <div className={`text-base font-black tracking-widest uppercase mb-1 ${isActive ? "text-[var(--bg-color)]" : "text-[var(--text-color)]"}`}>
                       Level {index + 1}
                     </div>
                     <div className="text-[10px] font-bold tracking-widest uppercase opacity-70">
