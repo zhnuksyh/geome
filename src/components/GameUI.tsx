@@ -92,7 +92,7 @@ export function GameUI({
 
   return (
     <>
-      <div className="fixed inset-0 z-10 flex flex-col p-8 pointer-events-none justify-between">
+      <div className="fixed inset-0 z-10 flex flex-col p-8 pointer-events-none">
         
         {/* Top Section */}
         <div className="flex justify-between items-start w-full relative">
@@ -279,7 +279,10 @@ export function GameUI({
           </div>
         </div>
 
-        {/* Bottom Tool Palette */}
+      </div>
+
+      {/* Bottom Tool Palette — fixed independently so it never gets pushed by panel content */}
+      <div className="fixed bottom-8 left-0 right-0 z-10 flex justify-center pointer-events-none">
         <ToolPalette
           activeTool={activeTool}
           selectedOp={selectedOp}

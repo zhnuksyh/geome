@@ -6,9 +6,10 @@ interface WinModalProps {
   moves: number;
   timeElapsed: number;
   par: { bronze: number; silver: number; gold: number; };
+  isLastLevel?: boolean;
 }
 
-export function WinModal({ isOpen, onNextLevel, moves, timeElapsed, par }: WinModalProps) {
+export function WinModal({ isOpen, onNextLevel, moves, timeElapsed, par, isLastLevel = false }: WinModalProps) {
   if (!isOpen) return null;
 
   const mins = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
@@ -80,7 +81,7 @@ export function WinModal({ isOpen, onNextLevel, moves, timeElapsed, par }: WinMo
           onClick={onNextLevel}
           className="w-full py-3 px-8 tracking-[0.2em] uppercase font-bold border-2 border-[var(--panel-border)] bg-[var(--accent-yellow)] text-black hover:brightness-110 hover:translate-y-0.5 transition-transform"
         >
-          Next Composition
+          {isLastLevel ? 'Finish Campaign →' : 'Next Composition'}
         </button>
       </div>
     </div>

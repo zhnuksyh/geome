@@ -173,24 +173,23 @@ export const LEVELS: LevelDef[] = [
         ]
     },
     {
-        title: "Saturn's Orbit",
-        par: { bronze: 7, silver: 5, gold: 3 },
-        allowedTools: ['ellipse', 'circle', 'square'],
+        title: "Orbital Ring",
+        par: { bronze: 6, silver: 4, gold: 3 },
+        allowedTools: ['ellipse', 'circle'],
         targetShapes: [
-            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 90, rotation: 0 },
-            { type: 'ellipse', op: 'xor', x: 300, y: 300, size: 210, rotation: Math.PI / 6 },
-            { type: 'ellipse', op: 'destination-out', x: 300, y: 300, size: 180, rotation: Math.PI / 6 }
+            { type: 'ellipse', op: 'source-over', x: 300, y: 300, size: 150, rotation: 0 },
+            { type: 'ellipse', op: 'destination-out', x: 300, y: 300, size: 90, rotation: 0 },
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 30, rotation: 0 }
         ]
     },
     {
-        title: "Bauhaus Crown",
-        par: { bronze: 10, silver: 7, gold: 5 },
-        allowedTools: ['pentagon', 'semicircle', 'rhombus', 'triangle'],
+        title: "Star Gate",
+        par: { bronze: 7, silver: 5, gold: 3 },
+        allowedTools: ['pentagon', 'circle', 'triangle'],
         targetShapes: [
-            { type: 'pentagon', op: 'source-over', x: 300, y: 270, size: 150, rotation: 0 },
-            { type: 'rhombus', op: 'source-over', x: 300, y: 360, size: 120, rotation: Math.PI / 2 },
-            { type: 'semicircle', op: 'destination-out', x: 300, y: 450, size: 90, rotation: -Math.PI / 2 },
-            { type: 'triangle', op: 'xor', x: 300, y: 150, size: 90, rotation: Math.PI }
+            { type: 'pentagon', op: 'source-over', x: 300, y: 300, size: 150, rotation: 0 },
+            { type: 'circle', op: 'destination-out', x: 300, y: 300, size: 90, rotation: 0 },
+            { type: 'triangle', op: 'source-over', x: 300, y: 300, size: 60, rotation: 0 }
         ]
     }
 ];

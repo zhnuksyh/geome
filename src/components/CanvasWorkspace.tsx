@@ -59,6 +59,7 @@ export function CanvasWorkspace({
   const lastCalcTimeRef = useRef(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [zoomLevel, setZoomLevel] = useState(1.0);
   const [isPeeking, setIsPeeking] = useState(false);
 
   // Physics Toss state tracking
@@ -93,13 +94,15 @@ export function CanvasWorkspace({
     return () => ro.disconnect();
   }, []);
 
-  // ─── Draw target canvas on level change ────────────────────────────
+  // ─── Draw target canvas on level/theme change ──────────────────────
   useEffect(() => {
     if (isSandbox) { onAccuracyChange(0); return; }
     const tCtx = targetCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (tCtx) {
       tCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-      const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#000000';
+      // Derive color directly from theme prop to avoid getComputedStyle timing issues
+      // (child effects run before parent effects update data-theme on <html>)
+      const themeColor = theme === 'light' ? '#111827' : theme === 'dark' ? '#e5e5e5' : '#66fcf1';
       targets.forEach(t => {
         drawShape(tCtx, t.type, t.op, t.x, t.y, t.size, t.rotation, themeColor);
       });
@@ -266,8 +269,8 @@ export function CanvasWorkspace({
   // ─── Pointer events ────────────────────────────────────────────────
   const handleAddShape = (type: ShapeType, rawX: number, rawY: number) => {
     snapshot();
-    const x = Math.round(rawX / 30) * 30;
-    const y = Math.round(rawY / 30) * 30;
+    const x = showGrid ? Math.round(rawX / 30) * 30 : rawX;
+    const y = showGrid ? Math.round(rawY / 30) * 30 : rawY;
 
     const newShape: ShapeObj = {
       id: generateId(),
@@ -425,9 +428,10 @@ export function CanvasWorkspace({
             const orig = originalShapesRef.current.get(s.id);
             if (!orig) return s;
 
-            // Enforce rigid 30px interval lock-stepping
-            const finalX = Math.round((orig.x + dx) / 30) * 30;
-            const finalY = Math.round((orig.y + dy) / 30) * 30;
+            const rawX = orig.x + dx;
+            const rawY = orig.y + dy;
+            const finalX = showGrid ? Math.round(rawX / 30) * 30 : rawX;
+            const finalY = showGrid ? Math.round(rawY / 30) * 30 : rawY;
 
             return { ...s, x: finalX, y: finalY };
           }
@@ -529,7 +533,9 @@ export function CanvasWorkspace({
           if (Math.abs(currentVx) < 0.5 && Math.abs(currentVy) < 0.5) {
             setShapes(prev => prev.map(s => {
               if (flyingIds.includes(s.id)) {
-                return { ...s, x: Math.round(s.x / 30) * 30, y: Math.round(s.y / 30) * 30 };
+                return showGrid
+                  ? { ...s, x: Math.round(s.x / 30) * 30, y: Math.round(s.y / 30) * 30 }
+                  : s;
               }
               return s;
             }));
@@ -641,6 +647,9 @@ export function CanvasWorkspace({
           return;
         }
         if (key === 'x' && shift) { e.preventDefault(); onClear(); return; }
+        if (key === '=' || key === '+') { e.preventDefault(); setZoomLevel(prev => Math.min(3.0, Math.round((prev + 0.25) * 100) / 100)); return; }
+        if (key === '-') { e.preventDefault(); setZoomLevel(prev => Math.max(0.5, Math.round((prev - 0.25) * 100) / 100)); return; }
+        if (key === '0') { e.preventDefault(); setZoomLevel(1.0); return; }
         return;
       }
 
@@ -714,10 +723,15 @@ export function CanvasWorkspace({
   ]);
 
   return (
-    <div className="flex items-center justify-center flex-1 min-h-0 min-w-0 p-4">
+    <div className="flex items-center justify-center flex-1 min-h-0 min-w-0 p-4 relative">
+      {zoomLevel !== 1.0 && (
+        <div className="absolute bottom-6 right-6 z-20 text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--text-color)] opacity-50 pointer-events-none select-none">
+          {Math.round(zoomLevel * 100)}%
+        </div>
+      )}
       <div
         ref={wrapperRef}
-        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
+        style={{ transform: `scale(${scale * zoomLevel})`, transformOrigin: 'center center' }}
       >
         <div ref={containerRef} className="relative transition-transform duration-75">
           <div className="absolute -inset-1 bg-[var(--shadow-color)] translate-x-3 translate-y-3" />

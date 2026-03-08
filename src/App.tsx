@@ -12,6 +12,8 @@ import confetti from 'canvas-confetti';
 import { useAchievements } from './game/achievements';
 import { saveGalleryItem, GalleryItem } from './utils/gallery';
 import { GalleryScreen } from './components/GalleryScreen';
+import { TutorialOverlay } from './components/TutorialOverlay';
+import { CompletionModal } from './components/CompletionModal';
 
 export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
@@ -34,10 +36,20 @@ export default function App() {
   const [accuracy, setAccuracy] = useState<number>(0);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
+  const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(true);
   const [levelRatings, setLevelRatings] = useLocalStorage<Record<number, number>>('geome_ratings', {});
 
   const { unlockedIds, recentUnlock, unlock } = useAchievements();
+
+  const [showTutorial, setShowTutorial] = useState<boolean>(() => {
+    try { return !localStorage.getItem('geome_tutorial_done'); } catch { return false; }
+  });
+
+  const handleTutorialComplete = () => {
+    try { localStorage.setItem('geome_tutorial_done', '1'); } catch { /* ignore */ }
+    setShowTutorial(false);
+  };
 
   const containerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -173,9 +185,17 @@ export default function App() {
     setShapes([]);
     setMoves(0);
     setTimeElapsed(0);
+    setActiveTool('select');
+    setSelectedOp('source-over');
+    setActiveShapeIds([]);
+    if (currentLevel >= LEVELS.length - 1) {
+      setIsCompletionModalOpen(true);
+      setGameState('menu');
+      return;
+    }
     setCurrentLevel((prev) => prev + 1);
     setGameState('playing');
-  }, [setShapes, setCurrentLevel]);
+  }, [setShapes, setCurrentLevel, currentLevel]);
 
   const handleSelectLevel = useCallback((levelIndex: number) => {
     snapshot();
@@ -183,6 +203,8 @@ export default function App() {
     setActiveShapeIds([]);
     setMoves(0);
     setTimeElapsed(0);
+    setActiveTool('select');
+    setSelectedOp('source-over');
     setCurrentLevel(levelIndex);
     setGameState('playing');
   }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot, setMoves]);
@@ -342,6 +364,11 @@ export default function App() {
         </div>
       )}
 
+      {/* Guided Tutorial — shown once on first play */}
+      {showTutorial && gameState === 'playing' && (
+        <TutorialOverlay onComplete={handleTutorialComplete} />
+      )}
+
       {/* Achievement Toast */}
       {recentUnlock && (
         <div className="fixed bottom-8 right-8 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
@@ -424,7 +451,18 @@ export default function App() {
         moves={moves}
         timeElapsed={timeElapsed}
         par={LEVELS[currentLevel % LEVELS.length].par}
+        isLastLevel={currentLevel === LEVELS.length - 1}
       />
+
+      {/* Campaign Completion Modal */}
+      {isCompletionModalOpen && (
+        <CompletionModal
+          levelRatings={levelRatings}
+          onMenu={() => { setIsCompletionModalOpen(false); setGameState('menu'); }}
+          onGallery={() => { setIsCompletionModalOpen(false); setGameState('gallery'); }}
+          onReplay={() => { setIsCompletionModalOpen(false); setCurrentLevel(0); setShapes([]); setGameState('playing'); }}
+        />
+      )}
 
       {/* Ambient Audio Player */}
       <audio ref={audioRef} loop src={`${import.meta.env.BASE_URL}audio/ambient-loop.m4a`} />
