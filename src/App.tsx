@@ -122,6 +122,7 @@ export default function App() {
           origin: { y: 0.8 },
           colors: ['#A8AADC', '#1D3557']
         });
+        unlock('gallery_artist');
       }
       return;
     }
@@ -142,6 +143,14 @@ export default function App() {
       if (timeElapsed <= 10) unlock('speed_demon');
       if (moves <= gold) unlock('efficiency_expert');
       if (accuracy >= 99.9) unlock('perfectionist');
+      if (currentLevel === 0) unlock('first_level');
+      if (currentLevel === LEVELS.length - 1) unlock('completionist');
+      if (shapes.length === 1) unlock('minimalist');
+
+      const usedOps = new Set(shapes.map(s => s.op));
+      if (['source-over', 'destination-out', 'destination-in', 'xor'].every(op => usedOps.has(op as any))) {
+        unlock('boolean_master');
+      }
 
       // Save star rating (1–3): 3=gold, 2=silver/bronze, 1=over par
       const stars = moves <= gold ? 3 : moves <= bronze ? 2 : 1;
@@ -405,6 +414,7 @@ export default function App() {
         redo={redo}
         onClear={handleClear}
         isSandbox={gameState === 'sandbox'}
+        theme={theme}
       />
 
       {/* Win Modal */}
