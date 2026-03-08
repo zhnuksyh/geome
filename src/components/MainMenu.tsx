@@ -1,10 +1,12 @@
-import { Play } from 'lucide-react';
+import { Play, LayoutGrid } from 'lucide-react';
 
 interface MainMenuProps {
   onPlay: () => void;
+  onSandbox: () => void;
+  onGallery: () => void;
 }
 
-export function MainMenu({ onPlay }: MainMenuProps) {
+export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-color)] font-sans"
@@ -31,17 +33,40 @@ export function MainMenu({ onPlay }: MainMenuProps) {
           </p>
         </div>
 
-        {/* Play Button */}
-        <button 
-          onClick={onPlay}
-          className="relative group mt-8"
-        >
-          <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
-          <div className="relative flex items-center gap-4 bg-[var(--accent-red)] border-4 border-[var(--panel-border)] px-12 py-6 text-[var(--bg-color)] text-3xl font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2">
-            <Play size={32} strokeWidth={3} fill="currentColor" />
-            <span>Play Now</span>
-          </div>
-        </button>
+        {/* Buttons */}
+        <div className="flex flex-col gap-4 mt-8 w-full max-w-sm">
+          <button 
+            onClick={onPlay}
+            className="relative group w-full"
+          >
+            <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
+            <div className="relative flex items-center justify-center gap-4 bg-[var(--accent-red)] border-4 border-[var(--panel-border)] px-12 py-6 text-[var(--bg-color)] text-3xl font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2">
+              <Play size={32} strokeWidth={3} fill="currentColor" />
+              <span>Campaign</span>
+            </div>
+          </button>
+
+          <button 
+            onClick={onSandbox}
+            className="relative group w-full"
+          >
+            <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
+            <div className="relative flex items-center justify-center gap-4 bg-[var(--accent-blue)] border-4 border-[var(--panel-border)] px-8 py-4 text-[var(--bg-color)] text-xl font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2">
+              <span>Sandbox Mode</span>
+            </div>
+          </button>
+
+          <button 
+            onClick={onGallery}
+            className="relative group w-full"
+          >
+            <div className="absolute inset-0 bg-[var(--text-color)] translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
+            <div className="relative flex items-center justify-center gap-4 bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] px-8 py-4 text-[var(--text-color)] text-xl font-black uppercase tracking-widest transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5 hover:bg-[var(--accent-yellow)] hover:text-black transition-colors">
+              <LayoutGrid size={24} />
+              <span>Gallery</span>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );

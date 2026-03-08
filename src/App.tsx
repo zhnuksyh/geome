@@ -10,6 +10,8 @@ import { MainMenu } from './components/MainMenu';
 import { sfx } from './game/audio';
 import confetti from 'canvas-confetti';
 import { useAchievements } from './game/achievements';
+import { saveGalleryItem, GalleryItem } from './utils/gallery';
+import { GalleryScreen } from './components/GalleryScreen';
 
 export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
@@ -24,7 +26,7 @@ export default function App() {
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
-  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected' | 'won'>('menu');
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected' | 'won' | 'sandbox' | 'gallery'>('menu');
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
   const [activeHoverOp, setActiveHoverOp] = useState<OpType | null>(null);
@@ -102,6 +104,20 @@ export default function App() {
   }, [setShapes, snapshot, setMoves]);
 
   const handleFinalize = useCallback(() => {
+    if (gameState === 'sandbox') {
+      const success = saveGalleryItem(shapes, theme);
+      if (success) {
+        sfx.playSuccess();
+        confetti({
+          particleCount: 100,
+          spread: 50,
+          origin: { y: 0.8 },
+          colors: ['#A8AADC', '#1D3557']
+        });
+      }
+      return;
+    }
+
     if (accuracy >= 95.0) {
       setGameState('won');
       sfx.playSuccess();
@@ -148,6 +164,23 @@ export default function App() {
     setCurrentLevel(levelIndex);
     setGameState('playing');
   }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot, setMoves]);
+
+  const handleSandbox = useCallback(() => {
+    snapshot();
+    setShapes([]);
+    setActiveShapeIds([]);
+    setMoves(0);
+    setTimeElapsed(0);
+    setGameState('sandbox');
+  }, [setShapes, setActiveShapeIds, snapshot, setMoves]);
+
+  const handleSelectGalleryItem = useCallback((item: GalleryItem) => {
+    snapshot();
+    setShapes(item.shapes);
+    setActiveShapeIds([]);
+    setTheme(item.theme);
+    setGameState('sandbox');
+  }, [setShapes, setActiveShapeIds, snapshot, setTheme]);
 
   const handleSelectOp = useCallback(
     (op: OpType) => {
@@ -239,7 +272,18 @@ export default function App() {
       }}
     >
       {gameState === 'menu' && (
-        <MainMenu onPlay={() => setGameState('playing')} />
+        <MainMenu 
+          onPlay={() => setGameState('playing')} 
+          onSandbox={handleSandbox}
+          onGallery={() => setGameState('gallery')}
+        />
+      )}
+
+      {gameState === 'gallery' && (
+        <GalleryScreen 
+          onBack={() => setGameState('menu')}
+          onSelect={handleSelectGalleryItem}
+        />
       )}
 
       {/* Rejection Modal */
@@ -284,7 +328,10 @@ export default function App() {
         moves={moves}
         timeElapsed={timeElapsed}
         showGrid={showGrid}
-        allowedTools={LEVELS[currentLevel % LEVELS.length].allowedTools}
+        allowedTools={gameState === 'sandbox' 
+          ? ['circle', 'square', 'triangle', 'semicircle', 'hexagon', 'pentagon', 'rhombus', 'ellipse'] 
+          : LEVELS[currentLevel % LEVELS.length].allowedTools}
+        isSandbox={gameState === 'sandbox'}
         activeTool={activeTool}
         selectedOp={selectedOp}
         shapes={shapes}

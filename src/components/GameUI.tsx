@@ -36,6 +36,7 @@ interface GameUIProps {
   onDelete: () => void;
   onToggleGrid: () => void;
   onHoverOp: (op: OpType | null) => void;
+  isSandbox?: boolean;
 }
 
 export function GameUI({
@@ -66,6 +67,7 @@ export function GameUI({
   onDelete,
   onToggleGrid,
   onHoverOp,
+  isSandbox = false,
 }: GameUIProps) {
   const [isLevelSelectOpen, setIsLevelSelectOpen] = useState(false);
 
@@ -131,12 +133,18 @@ export function GameUI({
               <div className="flex flex-col items-center justify-center px-6 min-w-[140px]">
                 <div className="flex justify-between w-full items-end gap-4">
                   <div className="flex flex-col text-left">
-                    <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase tracking-widest leading-none mb-1">Action Par</span>
-                    <div className="flex gap-3 text-sm font-mono font-bold tracking-tighter leading-none mt-1">
-                      <span className="text-[var(--accent-yellow)]">G:{gold}</span>
-                      <span className="text-[#A8AADC]">S:{silver}</span>
-                      <span className="text-[#CD7F32]">B:{bronze}</span>
-                    </div>
+                    <span className="text-[10px] font-bold text-[var(--text-color)] opacity-60 uppercase tracking-widest leading-none mb-1">
+                      {isSandbox ? "Freeplay" : "Action Par"}
+                    </span>
+                    {isSandbox ? (
+                      <span className="text-xs font-mono font-bold text-[var(--text-color)] opacity-60">No Limit</span>
+                    ) : (
+                      <div className="flex gap-3 text-sm font-mono font-bold tracking-tighter leading-none mt-1">
+                        <span className="text-[var(--accent-yellow)]">G:{gold}</span>
+                        <span className="text-[#A8AADC]">S:{silver}</span>
+                        <span className="text-[#CD7F32]">B:{bronze}</span>
+                      </div>
+                    )}
                   </div>
                   <span className={`font-mono text-xl font-black leading-none ${medalColor}`}>
                     {moves}
@@ -152,8 +160,9 @@ export function GameUI({
         <div className="flex flex-col gap-3 w-[260px]">
           <button onClick={onFinalize} className="relative group block pointer-events-auto w-full">
             <div className="absolute inset-0 bg-[var(--text-color)] translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
-            <div className="relative bg-[var(--accent-red)] text-[var(--bg-color)] border-2 border-[var(--panel-border)] px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5">
-              Finalize Form
+            <div className={`relative border-2 border-[var(--panel-border)] px-8 py-4 font-bold tracking-widest uppercase transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5
+              ${isSandbox ? 'bg-[var(--accent-blue)] text-[var(--bg-color)]' : 'bg-[var(--accent-red)] text-[var(--bg-color)]'}`}>
+              {isSandbox ? 'Save to Gallery' : 'Finalize Form'}
             </div>
               </button>
               <div className="flex justify-between w-full mt-2">
@@ -234,6 +243,11 @@ export function GameUI({
                 <p className="flex items-center justify-start gap-3 mb-2">
                   <Scissors size={12} className="text-[var(--accent-red)]" /> [X] Slicer Tool
                 </p>
+                {isSandbox && (
+                  <p className="flex items-center justify-start gap-3 mb-2 text-[var(--accent-blue)]">
+                    <Orbit size={12} /> Sandbox: All Tools Unlocked
+                  </p>
+                )}
                 <p className="flex items-center justify-start gap-3">
                   <Trash2 size={12} className="text-[var(--text-color)]" /> Del to Remove · Esc Deselect
                 </p>
