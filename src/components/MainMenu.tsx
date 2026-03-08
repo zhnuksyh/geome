@@ -1,4 +1,4 @@
-import { Play, LayoutGrid } from 'lucide-react';
+import { Play, LayoutGrid, PenLine } from 'lucide-react';
 
 interface MainMenuProps {
   onPlay: () => void;
@@ -46,26 +46,29 @@ export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
             </div>
           </button>
 
-          <button 
-            onClick={onSandbox}
-            className="relative group w-full"
-          >
-            <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
-            <div className="relative flex items-center justify-center gap-4 bg-[var(--accent-blue)] border-4 border-[var(--panel-border)] px-8 py-4 text-[var(--bg-color)] text-xl font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2">
-              <span>Sandbox Mode</span>
-            </div>
-          </button>
+          <div className="flex gap-4 w-full">
+            <button
+              onClick={onSandbox}
+              className="relative group flex-1"
+            >
+              <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
+              <div className="relative flex flex-col items-center justify-center gap-2 bg-[var(--accent-blue)] border-4 border-[var(--panel-border)] px-4 py-5 text-[var(--bg-color)] font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2">
+                <PenLine size={22} strokeWidth={3} />
+                <span className="text-base">Sandbox</span>
+              </div>
+            </button>
 
-          <button 
-            onClick={onGallery}
-            className="relative group w-full"
-          >
-            <div className="absolute inset-0 bg-[var(--text-color)] translate-x-1.5 translate-y-1.5 transition-transform group-hover:translate-x-2 group-hover:translate-y-2" />
-            <div className="relative flex items-center justify-center gap-4 bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] px-8 py-4 text-[var(--text-color)] text-xl font-black uppercase tracking-widest transition-transform group-active:translate-x-1.5 group-active:translate-y-1.5 hover:bg-[var(--accent-yellow)] hover:text-black transition-colors">
-              <LayoutGrid size={24} />
-              <span>Gallery</span>
-            </div>
-          </button>
+            <button
+              onClick={onGallery}
+              className="relative group flex-1"
+            >
+              <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
+              <div className="relative flex flex-col items-center justify-center gap-2 bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] px-4 py-5 text-[var(--text-color)] font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2 hover:bg-[var(--accent-yellow)] hover:text-black transition-colors">
+                <LayoutGrid size={22} />
+                <span className="text-base">Gallery</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
