@@ -1,12 +1,21 @@
+import { Star } from 'lucide-react';
+
 interface WinModalProps {
   isOpen: boolean;
   onNextLevel: () => void;
   moves: number;
+  timeElapsed: number;
   par: { bronze: number; silver: number; gold: number; };
 }
 
-export function WinModal({ isOpen, onNextLevel, moves, par }: WinModalProps) {
+export function WinModal({ isOpen, onNextLevel, moves, timeElapsed, par }: WinModalProps) {
   if (!isOpen) return null;
+
+  const mins = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+  const secs = (timeElapsed % 60).toString().padStart(2, '0');
+
+  // 3 stars = gold, 2 stars = silver/bronze, 1 star = over par (any completion)
+  const stars = moves <= par.gold ? 3 : moves <= par.bronze ? 2 : 1;
 
   let medal = "COMPLETED";
   let medalColor = "text-[var(--text-color)]";
@@ -37,14 +46,33 @@ export function WinModal({ isOpen, onNextLevel, moves, par }: WinModalProps) {
           backgroundSize: '10px 10px',
         }}
       >
-        <h2 className={`text-4xl font-black mb-2 tracking-tighter bg-[var(--panel-bg)] inline-block px-4 border-2 border-[var(--panel-border)] ${medalColor}`}>
+        <h2 className={`text-4xl font-black mb-4 tracking-tighter bg-[var(--panel-bg)] inline-block px-4 border-2 border-[var(--panel-border)] ${medalColor}`}>
           {medal}
         </h2>
-        <div className="mb-4">
-          <span className="font-mono text-xl font-bold bg-[var(--panel-bg)] px-2 border-2 border-[var(--panel-border)] text-[var(--text-color)]">
+
+        {/* Star Rating */}
+        <div className="flex gap-2 justify-center mb-4 bg-[var(--panel-bg)] py-2 px-4 border-2 border-[var(--panel-border)] inline-flex mx-auto">
+          {[1, 2, 3].map(i => (
+            <Star
+              key={i}
+              size={28}
+              className={i <= stars ? 'text-[var(--accent-yellow)]' : 'text-[var(--text-color)] opacity-20'}
+              fill={i <= stars ? 'currentColor' : 'none'}
+              strokeWidth={2}
+            />
+          ))}
+        </div>
+
+        {/* Stats */}
+        <div className="flex gap-3 justify-center mb-4">
+          <span className="font-mono text-sm font-bold bg-[var(--panel-bg)] px-2 py-1 border-2 border-[var(--panel-border)] text-[var(--text-color)]">
             {moves} MOVES
           </span>
+          <span className="font-mono text-sm font-bold bg-[var(--panel-bg)] px-2 py-1 border-2 border-[var(--panel-border)] text-[var(--text-color)]">
+            {mins}:{secs}
+          </span>
         </div>
+
         <p className="text-sm font-bold uppercase tracking-widest mb-8 text-[var(--text-color)] opacity-80 bg-[var(--panel-bg)] inline-block px-2">
           {message}
         </p>

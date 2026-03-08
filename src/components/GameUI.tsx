@@ -38,6 +38,7 @@ interface GameUIProps {
   onHoverOp: (op: OpType | null) => void;
   isSandbox?: boolean;
   onMenuBack?: () => void;
+  levelRatings?: Record<number, number>;
 }
 
 export function GameUI({
@@ -70,6 +71,7 @@ export function GameUI({
   onHoverOp,
   isSandbox = false,
   onMenuBack,
+  levelRatings = {},
 }: GameUIProps) {
   const [isLevelSelectOpen, setIsLevelSelectOpen] = useState(false);
 
@@ -291,10 +293,11 @@ export function GameUI({
         />
       </div>
 
-      <LevelSelectModal 
+      <LevelSelectModal
         isOpen={isLevelSelectOpen}
         currentLevelIndex={currentLevel}
         maxUnlockedLevel={maxUnlockedLevel}
+        levelRatings={levelRatings}
         onSelectLevel={onSelectLevel}
         onClose={() => setIsLevelSelectOpen(false)}
       />
