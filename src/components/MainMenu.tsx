@@ -1,12 +1,16 @@
-import { Play, LayoutGrid, PenLine } from 'lucide-react';
+import { Play, LayoutGrid, PenLine, Volume2, VolumeX, Sun, Moon, Zap } from 'lucide-react';
 
 interface MainMenuProps {
   onPlay: () => void;
   onSandbox: () => void;
   onGallery: () => void;
+  isAudioOn: boolean;
+  onToggleAudio: () => void;
+  theme: 'light' | 'dark' | 'neon';
+  onThemeChange: (theme: 'light' | 'dark' | 'neon') => void;
 }
 
-export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
+export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudio, theme, onThemeChange }: MainMenuProps) {
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-color)] font-sans"
@@ -67,6 +71,30 @@ export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
                 <LayoutGrid size={22} />
                 <span className="text-base">Gallery</span>
               </div>
+            </button>
+          </div>
+
+          {/* Music + Theme Controls */}
+          <div className="flex items-center justify-center gap-6 pt-4 border-t-2 border-[var(--panel-border)]">
+            <button
+              onClick={onToggleAudio}
+              className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest transition-opacity ${isAudioOn ? 'text-[var(--accent-red)] opacity-100' : 'text-[var(--text-color)] opacity-40 hover:opacity-80'}`}
+              title={isAudioOn ? 'Mute Music' : 'Play Music'}
+            >
+              {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+              <span>{isAudioOn ? 'Music On' : 'Music Off'}</span>
+            </button>
+            <button
+              onClick={() => {
+                if (theme === 'light') onThemeChange('dark');
+                else if (theme === 'dark') onThemeChange('neon');
+                else onThemeChange('light');
+              }}
+              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--accent-yellow)] opacity-70 hover:opacity-100 transition-opacity"
+              title="Toggle Theme"
+            >
+              {theme === 'light' ? <Sun size={14} /> : theme === 'dark' ? <Moon size={14} /> : <Zap size={14} />}
+              <span>{theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : 'Neon'}</span>
             </button>
           </div>
         </div>

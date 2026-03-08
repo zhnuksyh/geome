@@ -34,7 +34,8 @@ export default function App() {
   const [accuracy, setAccuracy] = useState<number>(0);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
-  const [isAudioOn, setIsAudioOn] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(true);
+  const [levelRatings, setLevelRatings] = useLocalStorage<Record<number, number>>('geome_ratings', {});
 
   const { recentUnlock, unlock } = useAchievements();
 
@@ -87,7 +88,14 @@ export default function App() {
     sfx.setEnabled(isAudioOn);
     if (audioRef.current) {
       if (isAudioOn) {
-        audioRef.current.play().catch(e => console.log("Audio play blocked by browser:", e));
+        audioRef.current.play().catch(() => {
+          // Browser blocked autoplay — retry on first user gesture
+          const unlock = () => {
+            audioRef.current?.play().catch(() => {});
+          };
+          document.addEventListener('click', unlock, { once: true });
+          document.addEventListener('keydown', unlock, { once: true });
+        });
       } else {
         audioRef.current.pause();
       }
@@ -129,11 +137,15 @@ export default function App() {
       });
 
       const levelData = LEVELS[currentLevel % LEVELS.length];
-      const { gold } = levelData.par || { bronze: 99, silver: 99, gold: 99 };
-      
+      const { bronze, silver, gold } = levelData.par || { bronze: 99, silver: 99, gold: 99 };
+
       if (timeElapsed <= 10) unlock('speed_demon');
       if (moves <= gold) unlock('efficiency_expert');
       if (accuracy >= 99.9) unlock('perfectionist');
+
+      // Save star rating (1–3): 3=gold, 2=silver/bronze, 1=over par
+      const stars = moves <= gold ? 3 : moves <= bronze ? 2 : 1;
+      setLevelRatings(prev => ({ ...prev, [currentLevel]: Math.max(prev[currentLevel] || 0, stars) }));
 
       setTimeout(() => setIsWinModalOpen(true), 1500);
       // Unlock the next level if we beat the current peak
@@ -281,10 +293,14 @@ export default function App() {
       }}
     >
       {gameState === 'menu' && (
-        <MainMenu 
+        <MainMenu
           onPlay={handleStartCampaign}
           onSandbox={handleSandbox}
           onGallery={() => setGameState('gallery')}
+          isAudioOn={isAudioOn}
+          onToggleAudio={() => setIsAudioOn(!isAudioOn)}
+          theme={theme}
+          onThemeChange={setTheme}
         />
       )}
 
@@ -362,6 +378,7 @@ export default function App() {
         onHoverOp={setActiveHoverOp}
         theme={theme}
         onThemeChange={setTheme}
+        levelRatings={levelRatings}
       />
 
       {/* Canvas Workspace */}
@@ -389,10 +406,11 @@ export default function App() {
       />
 
       {/* Win Modal */}
-      <WinModal 
-        isOpen={isWinModalOpen} 
-        onNextLevel={handleNextLevel} 
+      <WinModal
+        isOpen={isWinModalOpen}
+        onNextLevel={handleNextLevel}
         moves={moves}
+        timeElapsed={timeElapsed}
         par={LEVELS[currentLevel % LEVELS.length].par}
       />
 
