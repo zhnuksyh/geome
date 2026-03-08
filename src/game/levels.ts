@@ -102,7 +102,7 @@ export const LEVELS: LevelDef[] = [
         par: { bronze: 3, silver: 2, gold: 1 },
         allowedTools: ['circle'],
         targetShapes: [
-            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 100, rotation: 0 }
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 90, rotation: 0 }
         ]
     },
     {
@@ -120,7 +120,7 @@ export const LEVELS: LevelDef[] = [
         allowedTools: ['circle'],
         targetShapes: [
             { type: 'circle', op: 'source-over', x: 300, y: 300, size: 120, rotation: 0 },
-            { type: 'circle', op: 'destination-out', x: 340, y: 260, size: 90, rotation: 0 }
+            { type: 'circle', op: 'destination-out', x: 330, y: 270, size: 90, rotation: 0 }
         ]
     },
     {
@@ -147,10 +147,10 @@ export const LEVELS: LevelDef[] = [
         par: { bronze: 5, silver: 3, gold: 2 },
         allowedTools: ['square', 'semicircle'],
         targetShapes: [
-            { type: 'square', op: 'source-over', x: 300, y: 350, size: 100, rotation: 0 },
-            { type: 'semicircle', op: 'source-over', x: 300, y: 250, size: 100, rotation: -Math.PI / 2 },
-            { type: 'square', op: 'destination-out', x: 300, y: 380, size: 60, rotation: 0 },
-            { type: 'semicircle', op: 'destination-out', x: 300, y: 320, size: 60, rotation: -Math.PI / 2 }
+            { type: 'square', op: 'source-over', x: 300, y: 360, size: 120, rotation: 0 },
+            { type: 'semicircle', op: 'source-over', x: 300, y: 240, size: 120, rotation: -Math.PI / 2 },
+            { type: 'square', op: 'destination-out', x: 300, y: 390, size: 60, rotation: 0 },
+            { type: 'semicircle', op: 'destination-out', x: 300, y: 330, size: 60, rotation: -Math.PI / 2 }
         ]
     },
     {
@@ -167,7 +167,7 @@ export const LEVELS: LevelDef[] = [
         par: { bronze: 6, silver: 4, gold: 3 },
         allowedTools: ['rhombus', 'triangle', 'square'],
         targetShapes: [
-            { type: 'rhombus', op: 'source-over', x: 300, y: 300, size: 160, rotation: 0 },
+            { type: 'rhombus', op: 'source-over', x: 300, y: 300, size: 150, rotation: 0 },
             { type: 'triangle', op: 'destination-out', x: 300, y: 180, size: 60, rotation: 0 },
             { type: 'triangle', op: 'destination-out', x: 300, y: 420, size: 60, rotation: Math.PI }
         ]
@@ -177,8 +177,8 @@ export const LEVELS: LevelDef[] = [
         par: { bronze: 7, silver: 5, gold: 3 },
         allowedTools: ['ellipse', 'circle', 'square'],
         targetShapes: [
-            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 80, rotation: 0 },
-            { type: 'ellipse', op: 'xor', x: 300, y: 300, size: 200, rotation: Math.PI / 6 },
+            { type: 'circle', op: 'source-over', x: 300, y: 300, size: 90, rotation: 0 },
+            { type: 'ellipse', op: 'xor', x: 300, y: 300, size: 210, rotation: Math.PI / 6 },
             { type: 'ellipse', op: 'destination-out', x: 300, y: 300, size: 180, rotation: Math.PI / 6 }
         ]
     },
@@ -187,10 +187,10 @@ export const LEVELS: LevelDef[] = [
         par: { bronze: 10, silver: 7, gold: 5 },
         allowedTools: ['pentagon', 'semicircle', 'rhombus', 'triangle'],
         targetShapes: [
-            { type: 'pentagon', op: 'source-over', x: 300, y: 280, size: 140, rotation: 0 },
+            { type: 'pentagon', op: 'source-over', x: 300, y: 270, size: 150, rotation: 0 },
             { type: 'rhombus', op: 'source-over', x: 300, y: 360, size: 120, rotation: Math.PI / 2 },
-            { type: 'semicircle', op: 'destination-out', x: 300, y: 460, size: 100, rotation: -Math.PI / 2 },
-            { type: 'triangle', op: 'xor', x: 300, y: 160, size: 80, rotation: Math.PI }
+            { type: 'semicircle', op: 'destination-out', x: 300, y: 450, size: 90, rotation: -Math.PI / 2 },
+            { type: 'triangle', op: 'xor', x: 300, y: 150, size: 90, rotation: Math.PI }
         ]
     }
 ];

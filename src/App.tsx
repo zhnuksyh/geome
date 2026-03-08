@@ -10,6 +10,8 @@ import { MainMenu } from './components/MainMenu';
 import { sfx } from './game/audio';
 import confetti from 'canvas-confetti';
 import { useAchievements } from './game/achievements';
+import { saveGalleryItem, GalleryItem } from './utils/gallery';
+import { GalleryScreen } from './components/GalleryScreen';
 
 export default function App() {
   // ─── Persisted State ────────────────────────────────────────────────
@@ -17,14 +19,14 @@ export default function App() {
   const [maxUnlockedLevel, setMaxUnlockedLevel] = useLocalStorage('geome_max_level', 0);
   const [shapes, setShapes] = useLocalStorage<ShapeObj[]>('geome_shapes', []);
   const [showGrid, setShowGrid] = useLocalStorage('geome_grid', false);
-  const [moves, setMoves] = useLocalStorage('geome_moves', 0);
+  const [moves, setMoves] = useState(0);
   const [theme, setTheme] = useLocalStorage<'light' | 'dark' | 'neon'>('geome_theme', 'light');
 
   // ─── History (Undo / Redo) ─────────────────────────────────────────
   const { snapshot, undo, redo } = useHistory(shapes, setShapes);
 
   // ─── Local State ───────────────────────────────────────────────────
-  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected' | 'won'>('menu');
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'rejected' | 'won' | 'sandbox' | 'gallery'>('menu');
   const [activeTool, setActiveTool] = useState<ToolMode>('select');
   const [selectedOp, setSelectedOp] = useState<OpType>('source-over');
   const [activeHoverOp, setActiveHoverOp] = useState<OpType | null>(null);
@@ -32,9 +34,10 @@ export default function App() {
   const [accuracy, setAccuracy] = useState<number>(0);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
-  const [isAudioOn, setIsAudioOn] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(true);
+  const [levelRatings, setLevelRatings] = useLocalStorage<Record<number, number>>('geome_ratings', {});
 
-  const { recentUnlock, unlock } = useAchievements();
+  const { unlockedIds, recentUnlock, unlock } = useAchievements();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -85,7 +88,14 @@ export default function App() {
     sfx.setEnabled(isAudioOn);
     if (audioRef.current) {
       if (isAudioOn) {
-        audioRef.current.play().catch(e => console.log("Audio play blocked by browser:", e));
+        audioRef.current.play().catch(() => {
+          // Browser blocked autoplay — retry on first user gesture
+          const unlock = () => {
+            audioRef.current?.play().catch(() => {});
+          };
+          document.addEventListener('click', unlock, { once: true });
+          document.addEventListener('keydown', unlock, { once: true });
+        });
       } else {
         audioRef.current.pause();
       }
@@ -102,6 +112,20 @@ export default function App() {
   }, [setShapes, snapshot, setMoves]);
 
   const handleFinalize = useCallback(() => {
+    if (gameState === 'sandbox') {
+      const success = saveGalleryItem(shapes, theme);
+      if (success) {
+        sfx.playSuccess();
+        confetti({
+          particleCount: 100,
+          spread: 50,
+          origin: { y: 0.8 },
+          colors: ['#A8AADC', '#1D3557']
+        });
+      }
+      return;
+    }
+
     if (accuracy >= 95.0) {
       setGameState('won');
       sfx.playSuccess();
@@ -113,11 +137,15 @@ export default function App() {
       });
 
       const levelData = LEVELS[currentLevel % LEVELS.length];
-      const { gold } = levelData.par || { bronze: 99, silver: 99, gold: 99 };
-      
+      const { bronze, silver, gold } = levelData.par || { bronze: 99, silver: 99, gold: 99 };
+
       if (timeElapsed <= 10) unlock('speed_demon');
       if (moves <= gold) unlock('efficiency_expert');
       if (accuracy >= 99.9) unlock('perfectionist');
+
+      // Save star rating (1–3): 3=gold, 2=silver/bronze, 1=over par
+      const stars = moves <= gold ? 3 : moves <= bronze ? 2 : 1;
+      setLevelRatings(prev => ({ ...prev, [currentLevel]: Math.max(prev[currentLevel] || 0, stars) }));
 
       setTimeout(() => setIsWinModalOpen(true), 1500);
       // Unlock the next level if we beat the current peak
@@ -134,6 +162,7 @@ export default function App() {
   const handleNextLevel = useCallback(() => {
     setIsWinModalOpen(false);
     setShapes([]);
+    setMoves(0);
     setTimeElapsed(0);
     setCurrentLevel((prev) => prev + 1);
     setGameState('playing');
@@ -148,6 +177,32 @@ export default function App() {
     setCurrentLevel(levelIndex);
     setGameState('playing');
   }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot, setMoves]);
+
+  const handleStartCampaign = useCallback(() => {
+    snapshot();
+    setShapes([]);
+    setActiveShapeIds([]);
+    setMoves(0);
+    setTimeElapsed(0);
+    setGameState('playing');
+  }, [setShapes, setActiveShapeIds, snapshot, setMoves]);
+
+  const handleSandbox = useCallback(() => {
+    snapshot();
+    setShapes([]);
+    setActiveShapeIds([]);
+    setMoves(0);
+    setTimeElapsed(0);
+    setGameState('sandbox');
+  }, [setShapes, setActiveShapeIds, snapshot, setMoves]);
+
+  const handleSelectGalleryItem = useCallback((item: GalleryItem) => {
+    snapshot();
+    setShapes(item.shapes);
+    setActiveShapeIds([]);
+    setTheme(item.theme);
+    setGameState('sandbox');
+  }, [setShapes, setActiveShapeIds, snapshot, setTheme]);
 
   const handleSelectOp = useCallback(
     (op: OpType) => {
@@ -239,7 +294,23 @@ export default function App() {
       }}
     >
       {gameState === 'menu' && (
-        <MainMenu onPlay={() => setGameState('playing')} />
+        <MainMenu
+          onPlay={handleStartCampaign}
+          onSandbox={handleSandbox}
+          onGallery={() => setGameState('gallery')}
+          isAudioOn={isAudioOn}
+          onToggleAudio={() => setIsAudioOn(!isAudioOn)}
+          theme={theme}
+          onThemeChange={setTheme}
+        />
+      )}
+
+      {gameState === 'gallery' && (
+        <GalleryScreen
+          onBack={() => setGameState('menu')}
+          onSelect={handleSelectGalleryItem}
+          unlockedIds={unlockedIds}
+        />
       )}
 
       {/* Rejection Modal */
@@ -284,7 +355,11 @@ export default function App() {
         moves={moves}
         timeElapsed={timeElapsed}
         showGrid={showGrid}
-        allowedTools={LEVELS[currentLevel % LEVELS.length].allowedTools}
+        allowedTools={gameState === 'sandbox' 
+          ? ['circle', 'square', 'triangle', 'semicircle', 'hexagon', 'pentagon', 'rhombus', 'ellipse'] 
+          : LEVELS[currentLevel % LEVELS.length].allowedTools}
+        isSandbox={gameState === 'sandbox'}
+        onMenuBack={() => setGameState('menu')}
         activeTool={activeTool}
         selectedOp={selectedOp}
         shapes={shapes}
@@ -305,6 +380,7 @@ export default function App() {
         onHoverOp={setActiveHoverOp}
         theme={theme}
         onThemeChange={setTheme}
+        levelRatings={levelRatings}
       />
 
       {/* Canvas Workspace */}
@@ -328,18 +404,20 @@ export default function App() {
         undo={undo}
         redo={redo}
         onClear={handleClear}
+        isSandbox={gameState === 'sandbox'}
       />
 
       {/* Win Modal */}
-      <WinModal 
-        isOpen={isWinModalOpen} 
-        onNextLevel={handleNextLevel} 
+      <WinModal
+        isOpen={isWinModalOpen}
+        onNextLevel={handleNextLevel}
         moves={moves}
+        timeElapsed={timeElapsed}
         par={LEVELS[currentLevel % LEVELS.length].par}
       />
 
       {/* Ambient Audio Player */}
-      <audio ref={audioRef} loop src="/audio/ambient-loop.m4a" />
+      <audio ref={audioRef} loop src={`${import.meta.env.BASE_URL}audio/ambient-loop.m4a`} />
     </div>
   );
 }
