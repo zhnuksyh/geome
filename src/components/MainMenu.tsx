@@ -15,7 +15,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
         backgroundSize: '40px 40px',
       }}
     >
-      <div className="flex flex-col items-center gap-12 bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] p-16 rotate-1 hover:rotate-0 transition-transform duration-300">
+      <div className="flex flex-col items-center gap-12 bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] shadow-[16px_16px_0px_0px_var(--shadow-color)] p-16 rotate-1 hover:rotate-0 transition-transform duration-300">
         
         {/* Logo and Concept Art */}
         <div className="flex flex-col items-center gap-6">
@@ -28,7 +28,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
           <h1 className="text-8xl font-black tracking-tighter uppercase text-center text-[var(--text-color)]">
             GEOME
           </h1>
-          <p className="text-xl font-bold tracking-widest text-gray-400 uppercase">
+          <p className="text-xl font-bold tracking-widest text-[var(--text-color)] opacity-40 uppercase">
             Construct The Target
           </p>
         </div>

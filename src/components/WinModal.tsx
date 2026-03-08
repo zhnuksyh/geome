@@ -1,5 +1,3 @@
-import { Button } from './ui/Button';
-
 interface WinModalProps {
   isOpen: boolean;
   onNextLevel: () => void;
@@ -50,13 +48,12 @@ export function WinModal({ isOpen, onNextLevel, moves, par }: WinModalProps) {
         <p className="text-sm font-bold uppercase tracking-widest mb-8 text-[var(--text-color)] opacity-80 bg-[var(--panel-bg)] inline-block px-2">
           {message}
         </p>
-        <Button
-          size="lg"
-          className="w-full tracking-[0.2em] uppercase border-2 border-[var(--panel-border)] bg-[var(--accent-yellow)] text-black rounded-none shadow-none hover:translate-y-1 hover:brightness-110"
+        <button
           onClick={onNextLevel}
+          className="w-full py-3 px-8 tracking-[0.2em] uppercase font-bold border-2 border-[var(--panel-border)] bg-[var(--accent-yellow)] text-black hover:brightness-110 hover:translate-y-0.5 transition-transform"
         >
           Next Composition
-        </Button>
+        </button>
       </div>
     </div>
   );

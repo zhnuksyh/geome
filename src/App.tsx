@@ -165,6 +165,15 @@ export default function App() {
     setGameState('playing');
   }, [setShapes, setActiveShapeIds, setCurrentLevel, snapshot, setMoves]);
 
+  const handleStartCampaign = useCallback(() => {
+    snapshot();
+    setShapes([]);
+    setActiveShapeIds([]);
+    setMoves(0);
+    setTimeElapsed(0);
+    setGameState('playing');
+  }, [setShapes, setActiveShapeIds, snapshot, setMoves]);
+
   const handleSandbox = useCallback(() => {
     snapshot();
     setShapes([]);
@@ -273,7 +282,7 @@ export default function App() {
     >
       {gameState === 'menu' && (
         <MainMenu 
-          onPlay={() => setGameState('playing')} 
+          onPlay={handleStartCampaign}
           onSandbox={handleSandbox}
           onGallery={() => setGameState('gallery')}
         />
