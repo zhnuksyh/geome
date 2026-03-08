@@ -43,7 +43,7 @@ export function WinModal({ isOpen, onNextLevel, moves, par }: WinModalProps) {
           {medal}
         </h2>
         <div className="mb-4">
-          <span className="font-mono text-xl font-bold bg-[var(--panel-bg)] px-2 border-2 border-[var(--panel-border)] border-t-0 text-[var(--text-color)]">
+          <span className="font-mono text-xl font-bold bg-[var(--panel-bg)] px-2 border-2 border-[var(--panel-border)] text-[var(--text-color)]">
             {moves} MOVES
           </span>
         </div>
@@ -52,7 +52,7 @@ export function WinModal({ isOpen, onNextLevel, moves, par }: WinModalProps) {
         </p>
         <Button
           size="lg"
-          className="w-full tracking-[0.2em] uppercase border-2 border-[var(--panel-border)] bg-[var(--panel-bg)] text-[var(--text-color)] rounded-none shadow-none hover:translate-y-1 hover:bg-[var(--accent-yellow)] hover:text-black hover:border-[var(--panel-border)]"
+          className="w-full tracking-[0.2em] uppercase border-2 border-[var(--panel-border)] bg-[var(--accent-yellow)] text-black rounded-none shadow-none hover:translate-y-1 hover:brightness-110"
           onClick={onNextLevel}
         >
           Next Composition
