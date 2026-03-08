@@ -82,3 +82,34 @@ input[type="submit"] {
 .animate-shake {
   animation: shake 0.2s ease-in-out;
 }
+
+/* ─── Custom Scrollbar ───────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+  border-left: 2px solid var(--panel-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border: none;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-yellow);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg-color);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--panel-border) var(--bg-color);
+}

@@ -63,7 +63,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery }: MainMenuProps) {
               className="relative group flex-1"
             >
               <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
-              <div className="relative flex flex-col items-center justify-center gap-2 bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] px-4 py-5 text-[var(--text-color)] font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2 hover:bg-[var(--accent-yellow)] hover:text-black transition-colors">
+              <div className="relative flex flex-col items-center justify-center gap-2 bg-[var(--accent-yellow)] border-4 border-[var(--panel-border)] px-4 py-5 text-black font-black uppercase tracking-widest transition-transform group-active:translate-x-2 group-active:translate-y-2">
                 <LayoutGrid size={22} />
                 <span className="text-base">Gallery</span>
               </div>
