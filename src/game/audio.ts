@@ -14,6 +14,9 @@ class SoundEngine {
     if (val && !this.ctx) {
       this.init();
     }
+    if (val && this.ctx) {
+      this.ctx.resume();
+    }
   }
 
   get isEnabled() {

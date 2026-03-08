@@ -386,7 +386,7 @@ export default function App() {
       />
 
       {/* Ambient Audio Player */}
-      <audio ref={audioRef} loop src="/audio/ambient-loop.m4a" />
+      <audio ref={audioRef} loop src={`${import.meta.env.BASE_URL}audio/ambient-loop.m4a`} />
     </div>
   );
 }
