@@ -68,7 +68,6 @@ Match quality is measured using pixel-accurate **Intersection-over-Union (IoU)**
 |--------|----------|
 | Select / Move | `V` |
 | Place shape | `C` `S` `T` `H` `E` `P` `R` `L` |
-| Slicer tool | `X` |
 | Delete selected | `Del` / `Backspace` |
 | Duplicate | `Ctrl+D` |
 | Undo / Redo | `Ctrl+Z` / `Ctrl+Shift+Z` |

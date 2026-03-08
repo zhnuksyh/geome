@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Scissors, Moon, Sun, Zap, ChevronLeft } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Moon, Sun, Zap, ChevronLeft } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -98,7 +98,7 @@ export function GameUI({
         <div className="flex justify-between items-start w-full relative">
           
           {/* Left Column (Score Panel + Layers) */}
-          <div className="flex flex-col gap-2 w-80 pointer-events-auto">
+          <div className="flex flex-col gap-4 w-80 pointer-events-auto">
             {onMenuBack && (
               <button
                 onClick={onMenuBack}
@@ -237,7 +237,7 @@ export function GameUI({
             <div className="bg-[var(--panel-bg)] border-[3px] border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] p-4 flex flex-col gap-3 text-left mt-2 w-[260px]">
               <div className="text-[10px] leading-relaxed text-[var(--text-color)] opacity-80 uppercase font-bold">
                 <p className="flex items-center justify-start gap-3 mb-2">
-                  <Keyboard size={12} className="text-[var(--text-color)]" /> V Select · C S T Tools
+                  <Keyboard size={12} className="text-[var(--text-color)]" /> V Select · C S T H E P R L
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
                   <Keyboard size={12} className="text-[var(--text-color)]" /> 1 2 3 4 Operations
@@ -265,9 +265,6 @@ export function GameUI({
                 </p>
                 <p className="flex items-center justify-start gap-3 mb-2">
                   <Orbit size={12} className="text-[var(--accent-blue)]" /> [Space] Peek Target
-                </p>
-                <p className="flex items-center justify-start gap-3 mb-2">
-                  <Scissors size={12} className="text-[var(--accent-red)]" /> [X] Slicer Tool
                 </p>
                 {isSandbox && (
                   <p className="flex items-center justify-start gap-3 mb-2 text-[var(--accent-blue)]">

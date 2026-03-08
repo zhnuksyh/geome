@@ -664,7 +664,9 @@ export function CanvasWorkspace({
       if (key === 't') { onSelectTool('triangle'); return; }
       if (key === 'h') { onSelectTool('hexagon'); return; }
       if (key === 'e') { onSelectTool('semicircle'); return; }
-      if (key === 'x') { onSelectTool('slice'); return; }
+      if (key === 'p') { onSelectTool('pentagon'); return; }
+      if (key === 'r') { onSelectTool('rhombus'); return; }
+      if (key === 'l') { onSelectTool('ellipse'); return; }
       if (key === 'g') { setShowGrid(prev => !prev); return; }
 
       const applyOp = (op: OpType) => {
