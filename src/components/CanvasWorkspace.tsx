@@ -23,6 +23,7 @@ interface CanvasWorkspaceProps {
   onClear: () => void;
   showGrid: boolean;
   setShowGrid: (val: boolean | ((prev: boolean) => boolean)) => void;
+  isSandbox?: boolean;
 }
 
 export function CanvasWorkspace({
@@ -45,6 +46,7 @@ export function CanvasWorkspace({
   onClear,
   showGrid,
   setShowGrid,
+  isSandbox = false,
 }: CanvasWorkspaceProps) {
   const gameCanvasRef = useRef<HTMLCanvasElement>(null);
   const targetCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -91,6 +93,7 @@ export function CanvasWorkspace({
 
   // ─── Draw target canvas on level change ────────────────────────────
   useEffect(() => {
+    if (isSandbox) { onAccuracyChange(0); return; }
     const tCtx = targetCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (tCtx) {
       tCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -101,7 +104,7 @@ export function CanvasWorkspace({
       setTimeout(() => calculateAccuracy(), 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLevel, targets]);
+  }, [currentLevel, targets, isSandbox]);
 
   // ─── Render game canvas ────────────────────────────────────────────
   const renderGameCanvas = useCallback((offset: number = 0) => {
@@ -212,6 +215,7 @@ export function CanvasWorkspace({
   }, [shapes, activeShapeIds, selectionBox, showGrid, isPeeking, activeHoverOp, activeTool]);
 
   const calculateAccuracy = useCallback(() => {
+    if (isSandbox) { onAccuracyChange(0); return; }
     const ctx = gameCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     const tCtx = targetCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (!ctx || !tCtx) return;
@@ -230,7 +234,7 @@ export function CanvasWorkspace({
     }
 
     onAccuracyChange(union === 0 ? 0 : (intersection / union) * 100);
-  }, [onAccuracyChange]);
+  }, [onAccuracyChange, isSandbox]);
 
   useEffect(() => {
     let animationFrameId: number;
@@ -722,7 +726,7 @@ export function CanvasWorkspace({
               ref={targetCanvasRef}
               width={CANVAS_SIZE}
               height={CANVAS_SIZE}
-              className="absolute opacity-15 pointer-events-none"
+              className={`absolute pointer-events-none ${isSandbox ? 'hidden' : 'opacity-15'}`}
             />
             {/* Interactive Player Layer */}
             <canvas

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Scissors, Moon, Sun, Zap } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Scissors, Moon, Sun, Zap, ChevronLeft } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -37,6 +37,7 @@ interface GameUIProps {
   onToggleGrid: () => void;
   onHoverOp: (op: OpType | null) => void;
   isSandbox?: boolean;
+  onMenuBack?: () => void;
 }
 
 export function GameUI({
@@ -68,6 +69,7 @@ export function GameUI({
   onToggleGrid,
   onHoverOp,
   isSandbox = false,
+  onMenuBack,
 }: GameUIProps) {
   const [isLevelSelectOpen, setIsLevelSelectOpen] = useState(false);
 
@@ -94,16 +96,38 @@ export function GameUI({
         <div className="flex justify-between items-start w-full relative">
           
           {/* Left Column (Score Panel + Layers) */}
-          <div className="flex flex-col gap-6 w-80 pointer-events-auto">
-            <ScorePanel 
-              currentLevel={currentLevel} 
-              accuracy={accuracy}
-              moves={moves}
-              onOpenLevelSelect={() => setIsLevelSelectOpen(true)} 
-            />
+          <div className="flex flex-col gap-2 w-80 pointer-events-auto">
+            {onMenuBack && (
+              <button
+                onClick={onMenuBack}
+                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[var(--text-color)] opacity-60 hover:opacity-100 transition-opacity self-start"
+              >
+                <ChevronLeft size={12} /> Menu
+              </button>
+            )}
+            {isSandbox ? (
+              <div className="bg-[var(--panel-bg)] border-[3px] border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] p-4 w-full">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="flex gap-1">
+                    <div className="w-3 h-3 bg-[var(--accent-red)]" />
+                    <div className="w-3 h-3 bg-[var(--accent-yellow)]" />
+                    <div className="w-3 h-3 bg-[var(--accent-blue)]" />
+                  </div>
+                  <h1 className="text-xl font-black tracking-tighter uppercase text-[var(--text-color)]">Geome</h1>
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 text-[var(--text-color)]">Sandbox — Free Composition</p>
+              </div>
+            ) : (
+              <ScorePanel
+                currentLevel={currentLevel}
+                accuracy={accuracy}
+                moves={moves}
+                onOpenLevelSelect={() => setIsLevelSelectOpen(true)}
+              />
+            )}
             {shapes.length > 0 && (
               <div className="relative">
-                <LayerPanel 
+                <LayerPanel
                   shapes={shapes}
                   activeShapeIds={activeShapeIds}
                   onSelectShape={onSelectShape}
@@ -116,8 +140,8 @@ export function GameUI({
             )}
           </div>
 
-          {/* Center Action Par & Timer */}
-          <div className="absolute left-1/2 -translate-x-1/2 pointer-events-auto">
+          {/* Center Action Par & Timer — hidden in sandbox */}
+          <div className={`absolute left-1/2 -translate-x-1/2 pointer-events-auto ${isSandbox ? 'hidden' : ''}`}>
             <div className="flex bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] shadow-[8px_8px_0px_0px_var(--shadow-color)] items-center h-16">
               
               {/* Timer */}

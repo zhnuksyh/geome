@@ -332,6 +332,7 @@ export default function App() {
           ? ['circle', 'square', 'triangle', 'semicircle', 'hexagon', 'pentagon', 'rhombus', 'ellipse'] 
           : LEVELS[currentLevel % LEVELS.length].allowedTools}
         isSandbox={gameState === 'sandbox'}
+        onMenuBack={() => setGameState('menu')}
         activeTool={activeTool}
         selectedOp={selectedOp}
         shapes={shapes}
@@ -375,6 +376,7 @@ export default function App() {
         undo={undo}
         redo={redo}
         onClear={handleClear}
+        isSandbox={gameState === 'sandbox'}
       />
 
       {/* Win Modal */}
