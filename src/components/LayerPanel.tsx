@@ -68,7 +68,7 @@ export function LayerPanel({
               onClick={(e) => onSelectShape(shape.id, e.shiftKey)}
               className={`flex items-center gap-3 p-2 text-left border-2 transition-colors cursor-pointer ${
                 isSelected
-                  ? 'bg-[var(--text-color)] text-[var(--panel-bg)] border-[var(--panel-border)]'
+                  ? 'bg-[var(--accent-yellow)] text-black border-[var(--panel-border)]'
                   : 'bg-[var(--panel-bg)] border-transparent hover:border-[var(--text-color)] text-[var(--text-color)]'
               }`}
             >
@@ -78,7 +78,7 @@ export function LayerPanel({
                   {shape.type} {trueIndex + 1}
                 </div>
                 <div className={`text-[9px] flex items-center gap-1 uppercase tracking-wider ${
-                  isSelected ? 'text-[var(--panel-bg)] opacity-90' : 'text-[var(--text-color)] opacity-70'
+                  isSelected ? 'text-black opacity-70' : 'text-[var(--text-color)] opacity-70'
                 }`}>
                   <OpIcon op={isBaseLayer ? 'source-over' : shape.op} className="w-3 h-3" />
                   {isBaseLayer ? 'Base (Union)' : OpLabel(shape.op)}

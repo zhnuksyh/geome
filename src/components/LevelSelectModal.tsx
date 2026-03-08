@@ -67,7 +67,7 @@ export function LevelSelectModal({
               return (
                 <div key={index} className="relative aspect-square group">
                   {/* Fake background for shadow impression without actually moving layout */}
-                  <div className="absolute inset-0 bg-[var(--text-color)] left-1 top-1" />
+                  <div className="absolute inset-0 bg-[var(--panel-border)] left-1 top-1" />
                   <button
                     onClick={() => {
                       onSelectLevel(index);
@@ -76,11 +76,11 @@ export function LevelSelectModal({
                     className={`absolute inset-0 flex flex-col items-center justify-center p-4 text-center transition-all border-2 border-[var(--panel-border)]
                       ${
                         isActive
-                          ? 'bg-[var(--text-color)] text-[var(--accent-yellow)] border-[var(--panel-border)] translate-x-1 translate-y-1'
+                          ? 'bg-[var(--accent-yellow)] text-black border-[var(--panel-border)] translate-x-1 translate-y-1'
                           : 'bg-[var(--panel-bg)] text-[var(--text-color)] hover:opacity-90 hover:-translate-y-1 hover:-translate-x-1 shadow-[4px_4px_0px_0px_var(--shadow-color)] group-hover:shadow-[8px_8px_0px_0px_var(--shadow-color)]'
                       }`}
                   >
-                    <div className={`text-base font-black tracking-widest uppercase mb-1 ${isActive ? "text-[var(--bg-color)]" : "text-[var(--text-color)]"}`}>
+                    <div className={`text-base font-black tracking-widest uppercase mb-1 ${isActive ? "text-black" : "text-[var(--text-color)]"}`}>
                       Level {index + 1}
                     </div>
                     <div className="text-[10px] font-bold tracking-widest uppercase opacity-70 mb-2">
@@ -92,7 +92,10 @@ export function LevelSelectModal({
                           <Star
                             key={i}
                             size={12}
-                            className={i <= rating ? 'text-[var(--accent-yellow)]' : 'text-[var(--text-color)] opacity-20'}
+                            className={i <= rating
+                              ? (isActive ? 'text-black opacity-80' : 'text-[var(--accent-yellow)]')
+                              : (isActive ? 'text-black opacity-20' : 'text-[var(--text-color)] opacity-20')
+                            }
                             fill={i <= rating ? 'currentColor' : 'none'}
                             strokeWidth={2}
                           />

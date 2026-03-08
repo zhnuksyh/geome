@@ -41,6 +41,30 @@
   --shadow-color: rgba(69, 162, 158, 0.6);
 }
 
+/*
+ * ─── Design System Rule: Active / Selected Interactive Elements ─────────────
+ *
+ * ALWAYS use `bg-[var(--accent-yellow)] text-black` for active buttons,
+ * selected cards, and focused tool/layer items.
+ *
+ * NEVER use `bg-[var(--text-color)]` as a button or card background.
+ * In dark mode --text-color is #e5e5e5 (bright white) and in neon mode it is
+ * #66fcf1 (cyan) — placing colored or low-contrast text on top produces
+ * illegible combinations across themes.
+ *
+ * `--accent-yellow` is always a warm, saturated yellow across all themes:
+ *   light: #FFB703  dark: #ffc940  neon: #fce300
+ * Black text on any of these values passes WCAG AA contrast. It is also the
+ * established accent already used on the Campaign button, WinModal CTA, and
+ * Gallery button — so it reads as "primary action" consistently everywhere.
+ *
+ * For shadow/offset divs behind interactive elements use
+ * `bg-[var(--panel-border)]`, not `bg-[var(--text-color)]`.
+ *
+ * For icon / sub-text colours on a yellow active card use `text-black`
+ * (opacity variants are fine), not any CSS variable.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;

@@ -56,7 +56,7 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
                   className={`p-2 border-2 transition-all flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${
                       isActive
-                        ? 'bg-[var(--text-color)] text-[var(--panel-bg)] border-[var(--panel-border)] translate-x-1 translate-y-1'
+                        ? 'bg-[var(--accent-yellow)] text-black border-[var(--panel-border)] translate-x-1 translate-y-1'
                         : 'bg-[var(--panel-bg)] border-[var(--panel-border)] text-[var(--text-color)] hover:-translate-y-1 shadow-[4px_4px_0px_0px_var(--shadow-color)]'
                     }`}
                 >
@@ -93,7 +93,7 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
                   className={`p-2 border-2 transition-transform duration-200 flex flex-col items-center justify-center text-[10px] font-bold tracking-widest uppercase w-[76px] h-[76px] shrink-0
                     ${
                       isActive
-                        ? 'bg-[var(--text-color)] text-[var(--panel-bg)] border-[var(--panel-border)] translate-x-1 translate-y-1'
+                        ? 'bg-[var(--accent-yellow)] text-black border-[var(--panel-border)] translate-x-1 translate-y-1'
                         : 'bg-[var(--panel-bg)] border-[var(--panel-border)] text-[var(--text-color)] hover:-translate-y-1 shadow-[4px_4px_0px_0px_var(--shadow-color)]'
                     }`}
                 >
