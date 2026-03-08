@@ -23,10 +23,15 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
         
         {/* Logo and Concept Art */}
         <div className="flex flex-col items-center gap-6">
-          <div className="flex gap-2 mb-4">
-            <div className="w-8 h-8 bg-[var(--accent-red)] border-2 border-[var(--panel-border)] rotate-12" />
-            <div className="w-8 h-8 bg-[var(--accent-yellow)] border-2 border-[var(--panel-border)] -rotate-12 rounded-full" />
-            <div className="w-8 h-8 bg-[var(--accent-blue)] border-2 border-[var(--panel-border)] rotate-45" />
+          <div className="flex gap-3 mb-4 items-end">
+            {/* Square */}
+            <div className="w-8 h-8 bg-[var(--accent-red)] border-2 border-[var(--panel-border)]" />
+            {/* Circle */}
+            <div className="w-9 h-9 bg-[var(--accent-yellow)] border-2 border-[var(--panel-border)] rounded-full" />
+            {/* Triangle */}
+            <svg width="34" height="30" viewBox="0 0 34 30" fill="none">
+              <polygon points="17,1 33,29 1,29" fill="var(--accent-blue)" stroke="var(--panel-border)" strokeWidth="2" strokeLinejoin="round" />
+            </svg>
           </div>
           
           <h1 className="text-8xl font-black tracking-tighter uppercase text-center text-[var(--text-color)]">
@@ -75,7 +80,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
           </div>
 
           {/* Music + Theme Controls */}
-          <div className="flex items-center justify-center gap-6 pt-4 border-t-2 border-[var(--panel-border)]">
+          <div className="flex items-center justify-center gap-6 mt-4 pt-6 border-t-2 border-[var(--panel-border)]">
             <button
               onClick={onToggleAudio}
               className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest transition-opacity ${isAudioOn ? 'text-[var(--accent-red)] opacity-100' : 'text-[var(--text-color)] opacity-40 hover:opacity-80'}`}
@@ -98,6 +103,11 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
             </button>
           </div>
         </div>
+
+        {/* Subtle credit */}
+        <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-[var(--text-color)] opacity-20 self-end -mt-8">
+          Made by Daimon
+        </p>
       </div>
     </div>
   );
