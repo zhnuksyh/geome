@@ -11,6 +11,50 @@ interface MainMenuProps {
   onThemeChange: (theme: 'light' | 'dark' | 'neon') => void;
 }
 
+const SHAPE_COLORS = [
+  'var(--accent-red)',
+  'var(--accent-yellow)',
+  'var(--accent-blue)',
+  'var(--accent-red)',
+  'var(--accent-yellow)',
+  'var(--accent-blue)',
+  'var(--accent-red)',
+  'var(--accent-yellow)',
+];
+
+function ShapeGrid() {
+  const S = 'var(--panel-border)';
+  const sw = '2';
+  const shapes = [
+    // Square
+    <rect key="sq" x="3" y="3" width="24" height="24" fill={SHAPE_COLORS[0]} stroke={S} strokeWidth={sw} />,
+    // Circle
+    <circle key="ci" cx="15" cy="15" r="12" fill={SHAPE_COLORS[1]} stroke={S} strokeWidth={sw} />,
+    // Triangle
+    <polygon key="tr" points="15,3 27,27 3,27" fill={SHAPE_COLORS[2]} stroke={S} strokeWidth={sw} strokeLinejoin="round" />,
+    // Hexagon (pointy-top)
+    <polygon key="hx" points="15,3 25.4,9 25.4,21 15,27 4.6,21 4.6,9" fill={SHAPE_COLORS[3]} stroke={S} strokeWidth={sw} strokeLinejoin="round" />,
+    // Semicircle (flat bottom)
+    <path key="sc" d="M3,15 A12,12,0,0,1,27,15 Z" fill={SHAPE_COLORS[4]} stroke={S} strokeWidth={sw} strokeLinejoin="round" />,
+    // Pentagon
+    <polygon key="pn" points="15,3 26.4,11.3 22.1,24.7 7.9,24.7 3.6,11.3" fill={SHAPE_COLORS[5]} stroke={S} strokeWidth={sw} strokeLinejoin="round" />,
+    // Rhombus
+    <polygon key="rh" points="15,3 27,15 15,27 3,15" fill={SHAPE_COLORS[6]} stroke={S} strokeWidth={sw} strokeLinejoin="round" />,
+    // Ellipse
+    <ellipse key="el" cx="15" cy="15" rx="12" ry="7" fill={SHAPE_COLORS[7]} stroke={S} strokeWidth={sw} />,
+  ];
+
+  return (
+    <div className="grid grid-cols-4 gap-2 mb-4">
+      {shapes.map((shape, i) => (
+        <svg key={i} width="30" height="30" viewBox="0 0 30 30" fill="none">
+          {shape}
+        </svg>
+      ))}
+    </div>
+  );
+}
+
 export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudio, theme, onThemeChange }: MainMenuProps) {
   return (
     <div
@@ -24,16 +68,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
 
         {/* Logo and Concept Art */}
         <div className="flex flex-col items-center gap-6">
-          <div className="flex gap-3 mb-4 items-end">
-            {/* Square */}
-            <div className="w-8 h-8 bg-[var(--accent-red)] border-2 border-[var(--panel-border)]" />
-            {/* Circle */}
-            <div className="w-9 h-9 bg-[var(--accent-yellow)] border-2 border-[var(--panel-border)] rounded-full" />
-            {/* Triangle */}
-            <svg width="34" height="30" viewBox="0 0 34 30" fill="none">
-              <polygon points="17,1 33,29 1,29" fill="var(--accent-blue)" stroke="var(--panel-border)" strokeWidth="2" strokeLinejoin="round" />
-            </svg>
-          </div>
+          <ShapeGrid />
 
           <h1 className="text-8xl font-black tracking-tighter uppercase text-center text-[var(--text-color)]">
             GEOME
