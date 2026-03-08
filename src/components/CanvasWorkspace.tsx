@@ -24,6 +24,7 @@ interface CanvasWorkspaceProps {
   showGrid: boolean;
   setShowGrid: (val: boolean | ((prev: boolean) => boolean)) => void;
   isSandbox?: boolean;
+  theme: 'light' | 'dark' | 'neon';
 }
 
 export function CanvasWorkspace({
@@ -47,6 +48,7 @@ export function CanvasWorkspace({
   showGrid,
   setShowGrid,
   isSandbox = false,
+  theme,
 }: CanvasWorkspaceProps) {
   const gameCanvasRef = useRef<HTMLCanvasElement>(null);
   const targetCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -104,7 +106,7 @@ export function CanvasWorkspace({
       setTimeout(() => calculateAccuracy(), 50);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLevel, targets, isSandbox]);
+  }, [currentLevel, targets, isSandbox, theme]);
 
   // ─── Render game canvas ────────────────────────────────────────────
   const renderGameCanvas = useCallback((offset: number = 0) => {

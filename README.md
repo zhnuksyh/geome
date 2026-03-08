@@ -1,96 +1,148 @@
-# Geome
+```
+  ██████╗ ███████╗ ██████╗ ███╗   ███╗███████╗
+ ██╔════╝ ██╔════╝██╔═══██╗████╗ ████║██╔════╝
+ ██║  ███╗█████╗  ██║   ██║██╔████╔██║█████╗
+ ██║   ██║██╔══╝  ██║   ██║██║╚██╔╝██║██╔══╝
+ ╚██████╔╝███████╗╚██████╔╝██║ ╚═╝ ██║███████╗
+  ╚═════╝ ╚══════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
+```
 
-A geometric Boolean puzzle game inspired by **Bauhaus** and **De Stijl** aesthetics. Players use geometric primitives and Boolean logic to recreate target compositions with mathematical precision.
+> **Construct the target. Precision is mandatory.**
+
+A geometric Boolean puzzle game built on **Bauhaus** and **De Stijl** principles. Place primitives, apply Boolean logic, match the target silhouette with 95%+ pixel accuracy — or the form is rejected.
+
+---
 
 ## Modes
 
-### Campaign
-10 handcrafted levels of increasing complexity. Each level presents a **target shape** rendered as a faint ghost on the canvas. Recreate it by placing, resizing, rotating, and combining primitives using Boolean operations — you need **95%+ match precision** to advance. Levels unlock sequentially.
+```
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  CAMPAIGN   │  │   SANDBOX   │  │   GALLERY   │
+│             │  │             │  │             │
+│ 10 curated  │  │ All tools.  │  │ Browse and  │
+│ levels of   │  │ No target.  │  │ revisit all │
+│ increasing  │  │ No scoring. │  │ saved work. │
+│ complexity. │  │ Pure form.  │  │ Export JSON.│
+└─────────────┘  └─────────────┘  └─────────────┘
+```
 
-### Sandbox
-A free-composition mode with all tools unlocked and no target or scoring. Build anything you want, then save it to your personal gallery.
+---
 
-### Gallery
-Browse and revisit all designs you've saved from Sandbox mode. Supports **export and import** as JSON so you can back up or share your collection. Click any saved piece to reopen it in Sandbox.
+## How It Works
 
-## Scoring
+1. A **target silhouette** appears faintly on the canvas
+2. Place geometric primitives — circle, square, triangle, and more
+3. Apply **Boolean operations** to add, subtract, intersect, or XOR shapes
+4. Hit **Finalize** once your composition reaches **≥ 95% IoU match**
+5. Fewer moves = more stars ★
 
-### Action Par
-Each level has a move budget. Finalize attempts and Boolean operations count as moves. Beat the target within par to earn medals:
+Match quality is measured using pixel-accurate **Intersection-over-Union (IoU)** on a dual-canvas render.
 
-| Medal | Threshold |
-|-------|-----------|
-| ★★★ Gold | Moves ≤ gold par |
-| ★★☆ Silver/Bronze | Moves ≤ bronze par |
-| ★☆☆ Completed | Any valid completion |
-
-Stars are saved per level and shown in the level select screen.
-
-### IoU Precision
-Match quality is calculated using a pixel-accurate **Intersection-over-Union (IoU)** algorithm on the dual canvas. 95% match is required to finalize a level.
+---
 
 ## Primitives
 
-| Shape | Key |
-|-------|-----|
-| Circle | `C` |
-| Square | `S` |
-| Triangle | `T` |
-| Hexagon | `H` |
-| Semicircle | `E` |
-| Pentagon | — |
-| Rhombus | — |
-| Ellipse | — |
+| Shape | Key | Shape | Key |
+|-------|-----|-------|-----|
+| Circle | `C` | Pentagon | `P` |
+| Square | `S` | Rhombus | `R` |
+| Triangle | `T` | Ellipse | `L` |
+| Hexagon | `H` | Semicircle | `E` |
+
+---
 
 ## Boolean Operations
 
-| Operation | Key | Effect |
-|-----------|-----|--------|
-| Union | `1` | Add shape to composition |
-| Subtract | `2` | Cut shape from layer below |
-| Intersect | `3` | Keep only overlapping area |
-| XOR | `4` | Keep everything except the overlap |
+| # | Operation | Effect |
+|---|-----------|--------|
+| `1` | **Union** | Merge shape into composition |
+| `2` | **Subtract** | Cut shape from layer below |
+| `3` | **Intersect** | Keep only overlapping area |
+| `4` | **XOR** | Keep everything except the overlap |
+
+---
 
 ## Controls
 
-| Category | Shortcut | Action |
-|----------|----------|--------|
-| **Tools** | `V` | Select / Move |
-| | `C S T H E` | Place primitive shape |
-| | `X` | Slicer Tool |
-| **Editing** | `Delete` / `Backspace` | Delete selected |
-| | `Ctrl+D` | Duplicate selected |
-| | `Ctrl+Z` / `Ctrl+Shift+Z` | Undo / Redo |
-| | `Ctrl+Shift+X` | Clear canvas |
-| **Transform** | Scroll | Resize selected (30px steps with grid on) |
-| | `Shift+Scroll` | Rotate selected (15° steps) |
-| **Layers** | `[` / `]` | Send backward / bring forward |
-| **View** | `G` | Toggle snap grid |
-| | `Space` (hold) | Peek at target shape |
+| Action | Shortcut |
+|--------|----------|
+| Select / Move | `V` |
+| Place shape | `C` `S` `T` `H` `E` `P` `R` `L` |
+| Slicer tool | `X` |
+| Delete selected | `Del` / `Backspace` |
+| Duplicate | `Ctrl+D` |
+| Undo / Redo | `Ctrl+Z` / `Ctrl+Shift+Z` |
+| Clear canvas | `Ctrl+Shift+X` |
+| Resize shape | `Scroll` |
+| Rotate shape | `Shift+Scroll` |
+| Layer order | `[` / `]` |
+| Snap grid | `G` |
+| Peek at target | `Space` (hold) |
+| Boolean ops | `1` `2` `3` `4` |
 
-## Snap Grid
+---
 
-Press `G` to toggle the **30px snap grid**. All target shapes are aligned to this grid — enabling the grid is the recommended way to achieve precise level solutions.
+## Star Rating
 
-## Themes
+Each level has a move par. Efficiency earns stars:
 
-Three visual themes, switchable at any time from the main menu or in-game:
-- **Light** — clean white background
-- **Dark** — deep charcoal palette
-- **Neon** — high-contrast cyan on near-black
+```
+★★★  Gold      Moves ≤ gold par
+★★☆  Silver    Moves ≤ bronze par
+★☆☆  Complete  Any valid finish
+```
+
+---
 
 ## Achievements
 
-Hidden achievements unlock based on play patterns (speed, efficiency, precision, exploration). An animated toast appears when one triggers.
+| Icon | Achievement | How to Unlock |
+|------|-------------|---------------|
+| 🌱 | First Composition | Complete your first level |
+| 🏆 | Completionist | Complete all campaign levels |
+| ⚡ | Speed Demon | Solve a level in under 10 seconds |
+| 🥇 | Efficiency Expert | Earn Gold on any level |
+| ✨ | Perfectionist | Hit 100% precision |
+| ⬛ | Minimalist | Complete a level with only 1 shape |
+| 🎯 | Boolean Pioneer | Apply your first Boolean operation |
+| 🔀 | Boolean Master | Use all 4 operations in one level |
+| 🏗️ | The Architect | Place 10+ shapes in a single level |
+| 🖼️ | Gallery Artist | Save your first design to the Gallery |
+
+---
+
+## Snap Grid
+
+Press `G` to toggle the **30 px snap grid**. All target shapes align to this grid — enabling it is the recommended path to precise solutions.
+
+---
+
+## Themes
+
+Switch any time from the main menu or in-game:
+
+```
+○ Light   clean white, black ink
+● Dark    deep charcoal palette
+◈ Neon    high-contrast cyan on near-black
+```
+
+---
 
 ## Tech Stack
 
-- **React 19** + **TypeScript 5.7**
-- **Vite 6** — dev server and production bundler
-- **Tailwind CSS v4** — utility-first styling with CSS custom properties for theming
-- **HTML5 Canvas API** — dual-canvas rendering (game layer + target reference), offscreen compositing
-- **Web Audio API** — procedural SFX engine with oscillators, no audio files for SFX
-- **LocalStorage** — persists level progress, ratings, theme, grid state, and gallery
+| Layer | Technology |
+|-------|-----------|
+| UI | React 19 + TypeScript 5.7 |
+| Build | Vite 6 |
+| Styling | Tailwind CSS v4 + CSS custom properties |
+| Rendering | HTML5 Canvas API (dual-canvas, offscreen compositing) |
+| Audio | Web Audio API — procedural oscillator SFX, no audio files |
+| Persistence | LocalStorage (progress, ratings, gallery, theme) |
+| Icons | Lucide React |
+| Effects | canvas-confetti |
+
+---
 
 ## Getting Started
 
@@ -99,21 +151,10 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-## Build
+Open `http://localhost:5173`
 
 ```bash
-npm run build
+npm run build   # outputs to dist/
 ```
 
-Outputs to `dist/`. Configured for GitHub Pages deployment at `/geome/` base path.
-
-## Dependencies
-
-- [Lucide React](https://lucide.dev) — icon library
-- [Canvas Confetti](https://www.npmjs.com/package/canvas-confetti) — celebration effects
-
----
-
-*Made by Daimon*
+Configured for GitHub Pages deployment at `/geome/` base path.

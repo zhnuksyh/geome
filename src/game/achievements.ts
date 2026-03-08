@@ -8,11 +8,20 @@ export interface Achievement {
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
-  { id: 'first_boolean', title: 'Boolean Pioneer', description: 'Perform your first Boolean operation.', icon: '🎯' },
-  { id: 'speed_demon', title: 'Speed Demon', description: 'Solve a level in under 10 seconds.', icon: '⚡' },
-  { id: 'efficiency_expert', title: 'Efficiency Expert', description: 'Earn a Gold medal on any level.', icon: '🥇' },
-  { id: 'perfectionist', title: 'Perfectionist', description: 'Achieve 100.0% visual precision.', icon: '✨' },
-  { id: 'the_architect', title: 'The Architect', description: 'Place 10 geometric primitives in a single level.', icon: '🏗️' },
+  // Progression
+  { id: 'first_level',        title: 'First Composition',  description: 'Complete your very first level.',                     icon: '🌱' },
+  { id: 'completionist',      title: 'Completionist',      description: 'Complete every campaign level.',                      icon: '🏆' },
+  // Skill
+  { id: 'speed_demon',        title: 'Speed Demon',        description: 'Solve a level in under 10 seconds.',                  icon: '⚡' },
+  { id: 'efficiency_expert',  title: 'Efficiency Expert',  description: 'Earn a Gold rating on any level.',                    icon: '🥇' },
+  { id: 'perfectionist',      title: 'Perfectionist',      description: 'Achieve 100% visual precision on any level.',         icon: '✨' },
+  { id: 'minimalist',         title: 'Minimalist',         description: 'Complete a level using only 1 shape.',                icon: '⬛' },
+  // Boolean mastery
+  { id: 'first_boolean',      title: 'Boolean Pioneer',    description: 'Apply your first Boolean operation to a shape.',      icon: '🎯' },
+  { id: 'boolean_master',     title: 'Boolean Master',     description: 'Use all 4 Boolean operations in a single level.',     icon: '🔀' },
+  // Exploration
+  { id: 'the_architect',      title: 'The Architect',      description: 'Place 10 or more shapes in a single level.',         icon: '🏗️' },
+  { id: 'gallery_artist',     title: 'Gallery Artist',     description: 'Save your first design to the Gallery.',             icon: '🖼️' },
 ];
 
 export function useAchievements() {
@@ -37,7 +46,6 @@ export function useAchievements() {
       const achievement = ACHIEVEMENTS.find(a => a.id === id);
       if (achievement) {
         setRecentUnlock(achievement);
-        // Clear toast after 4s
         setTimeout(() => setRecentUnlock(null), 4000);
       }
       return [...prev, id];
