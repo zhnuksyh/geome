@@ -19,7 +19,7 @@ export default function App() {
   const [maxUnlockedLevel, setMaxUnlockedLevel] = useLocalStorage('geome_max_level', 0);
   const [shapes, setShapes] = useLocalStorage<ShapeObj[]>('geome_shapes', []);
   const [showGrid, setShowGrid] = useLocalStorage('geome_grid', false);
-  const [moves, setMoves] = useLocalStorage('geome_moves', 0);
+  const [moves, setMoves] = useState(0);
   const [theme, setTheme] = useLocalStorage<'light' | 'dark' | 'neon'>('geome_theme', 'light');
 
   // ─── History (Undo / Redo) ─────────────────────────────────────────
@@ -162,6 +162,7 @@ export default function App() {
   const handleNextLevel = useCallback(() => {
     setIsWinModalOpen(false);
     setShapes([]);
+    setMoves(0);
     setTimeElapsed(0);
     setCurrentLevel((prev) => prev + 1);
     setGameState('playing');
@@ -305,9 +306,10 @@ export default function App() {
       )}
 
       {gameState === 'gallery' && (
-        <GalleryScreen 
+        <GalleryScreen
           onBack={() => setGameState('menu')}
           onSelect={handleSelectGalleryItem}
+          unlockedIds={unlockedIds}
         />
       )}
 

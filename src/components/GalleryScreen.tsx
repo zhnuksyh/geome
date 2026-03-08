@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, Trash2, Calendar, LayoutGrid, Download, Upload } from 'lucide-react';
+import { ChevronLeft, Trash2, Calendar, LayoutGrid, Download, Upload, Trophy, Lock } from 'lucide-react';
 import { Button } from './ui/Button';
 import { getGalleryItems, GalleryItem } from '../utils/gallery';
 import { CANVAS_SIZE, drawShape } from '../game/levels';
+import { ACHIEVEMENTS } from '../game/achievements';
 
 const THEME_FILL: Record<'light' | 'dark' | 'neon', string> = {
   light: '#111827',
@@ -46,10 +47,14 @@ function GalleryThumbnail({ item }: { item: GalleryItem }) {
 interface GalleryScreenProps {
   onBack: () => void;
   onSelect: (item: GalleryItem) => void;
+  unlockedIds: string[];
 }
 
-export function GalleryScreen({ onBack, onSelect }: GalleryScreenProps) {
+type Tab = 'designs' | 'achievements';
+
+export function GalleryScreen({ onBack, onSelect, unlockedIds }: GalleryScreenProps) {
   const [items, setItems] = useState<GalleryItem[]>([]);
+  const [activeTab, setActiveTab] = useState<Tab>('designs');
 
   useEffect(() => {
     setItems(getGalleryItems());
@@ -99,72 +104,148 @@ export function GalleryScreen({ onBack, onSelect }: GalleryScreenProps) {
     }
   };
 
+  const unlockedCount = ACHIEVEMENTS.filter(a => unlockedIds.includes(a.id)).length;
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-color)] font-sans overflow-auto p-12">
-      <div className="flex items-center justify-between mb-12">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
         <Button variant="ghost" onClick={onBack} className="flex gap-2 items-center text-[var(--text-color)] uppercase font-bold tracking-widest hover:-translate-x-1 transition-transform">
           <ChevronLeft size={20} />
           Back to Menu
         </Button>
         <div className="flex flex-col items-end">
           <h2 className="text-5xl font-black tracking-tighter uppercase text-[var(--text-color)]">
-            Design Gallery
+            Gallery
           </h2>
-          <div className="flex gap-4 mt-2">
-            <label className="cursor-pointer flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-color)] opacity-60 hover:opacity-100 transition-opacity">
-              <Upload size={14} />
-              Import JSON
-              <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-            </label>
-            <button onClick={handleExport} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-color)] opacity-60 hover:opacity-100 transition-opacity">
-              <Download size={14} />
-              Export JSON
-            </button>
-            <span className="text-sm font-bold text-[var(--text-color)] opacity-40 uppercase tracking-[0.3em] ml-4">
-              Your Saved Geometric Art
-            </span>
-          </div>
+          {activeTab === 'designs' && (
+            <div className="flex gap-4 mt-2">
+              <label className="cursor-pointer flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-color)] opacity-60 hover:opacity-100 transition-opacity">
+                <Upload size={14} />
+                Import JSON
+                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+              </label>
+              <button onClick={handleExport} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-color)] opacity-60 hover:opacity-100 transition-opacity">
+                <Download size={14} />
+                Export JSON
+              </button>
+              <span className="text-sm font-bold text-[var(--text-color)] opacity-40 uppercase tracking-[0.3em] ml-4">
+                Your Saved Geometric Art
+              </span>
+            </div>
+          )}
+          {activeTab === 'achievements' && (
+            <p className="text-sm font-bold text-[var(--text-color)] opacity-40 uppercase tracking-[0.3em] mt-2">
+              {unlockedCount} / {ACHIEVEMENTS.length} Unlocked
+            </p>
+          )}
         </div>
       </div>
 
-      {items.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center border-4 border-dashed border-[var(--grid-color)] opacity-40">
-          <LayoutGrid size={64} className="mb-4" />
-          <p className="text-xl font-bold uppercase tracking-widest">No designs saved yet</p>
-          <p className="text-sm uppercase tracking-widest mt-2">Enter Sandbox mode to create and save art!</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => onSelect(item)}
-              className="group relative bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] p-4 cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-[8px_8px_0px_0px_var(--shadow-color)] hover:shadow-[12px_12px_0px_0px_var(--shadow-color)]"
-            >
-              {/* Canvas Thumbnail */}
-              <div className="aspect-square border-2 border-[var(--panel-border)] mb-4 overflow-hidden">
-                <GalleryThumbnail item={item} />
-              </div>
+      {/* Tabs */}
+      <div className="flex gap-0 mb-8 border-b-4 border-[var(--panel-border)]">
+        {([
+          { id: 'designs' as Tab, label: 'Designs', icon: LayoutGrid },
+          { id: 'achievements' as Tab, label: 'Achievements', icon: Trophy },
+        ]).map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`relative flex items-center gap-2 px-8 py-3 text-[11px] font-black uppercase tracking-widest transition-all
+              ${activeTab === id
+                ? 'bg-[var(--accent-yellow)] text-black border-4 border-b-0 border-[var(--panel-border)] -mb-[4px]'
+                : 'bg-[var(--panel-bg)] text-[var(--text-color)] opacity-60 hover:opacity-100 border-4 border-transparent -mb-[4px]'
+              }`}
+          >
+            <Icon size={14} />
+            {label}
+          </button>
+        ))}
+      </div>
 
-              <div className="flex justify-between items-end">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-[var(--text-color)] opacity-50 uppercase tracking-widest flex items-center gap-1">
-                    <Calendar size={10} />
-                    {new Date(item.timestamp).toLocaleDateString()}
-                  </span>
-                  <span className="text-sm font-black uppercase text-[var(--text-color)]">
-                    Theme: {item.theme}
-                  </span>
+      {/* Designs Tab */}
+      {activeTab === 'designs' && (
+        items.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center border-4 border-dashed border-[var(--grid-color)] opacity-40">
+            <LayoutGrid size={64} className="mb-4" />
+            <p className="text-xl font-bold uppercase tracking-widest">No designs saved yet</p>
+            <p className="text-sm uppercase tracking-widest mt-2">Enter Sandbox mode to create and save art!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => onSelect(item)}
+                className="group relative bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] p-4 cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-[8px_8px_0px_0px_var(--shadow-color)] hover:shadow-[12px_12px_0px_0px_var(--shadow-color)]"
+              >
+                <div className="aspect-square border-2 border-[var(--panel-border)] mb-4 overflow-hidden">
+                  <GalleryThumbnail item={item} />
                 </div>
-                <button
-                  onClick={(e) => handleDelete(item.id, e)}
-                  className="p-2 text-[var(--text-color)] opacity-40 hover:text-[var(--accent-red)] hover:opacity-100 transition-colors"
-                >
-                  <Trash2 size={18} />
-                </button>
+                <div className="flex justify-between items-end">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-color)] opacity-50 uppercase tracking-widest flex items-center gap-1">
+                      <Calendar size={10} />
+                      {new Date(item.timestamp).toLocaleDateString()}
+                    </span>
+                    <span className="text-sm font-black uppercase text-[var(--text-color)]">
+                      Theme: {item.theme}
+                    </span>
+                  </div>
+                  <button
+                    onClick={(e) => handleDelete(item.id, e)}
+                    className="p-2 text-[var(--text-color)] opacity-40 hover:text-[var(--accent-red)] hover:opacity-100 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        )
+      )}
+
+      {/* Achievements Tab */}
+      {activeTab === 'achievements' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {ACHIEVEMENTS.map((a) => {
+            const unlocked = unlockedIds.includes(a.id);
+            return (
+              <div
+                key={a.id}
+                className={`relative border-4 border-[var(--panel-border)] p-6 flex flex-col items-center gap-3 text-center transition-all
+                  ${unlocked
+                    ? 'bg-[var(--panel-bg)] shadow-[8px_8px_0px_0px_var(--shadow-color)]'
+                    : 'bg-[var(--bg-color)] opacity-50'
+                  }`}
+              >
+                {/* Shadow offset for unlocked cards */}
+                {unlocked && <div className="absolute inset-0 bg-[var(--panel-border)] translate-x-2 translate-y-2 -z-10" />}
+
+                <div className={`text-5xl leading-none ${unlocked ? '' : 'grayscale'}`}>
+                  {unlocked ? a.icon : <Lock size={40} className="text-[var(--text-color)] opacity-30" />}
+                </div>
+
+                <div className="text-sm font-black uppercase tracking-widest text-[var(--text-color)] leading-tight">
+                  {a.title}
+                </div>
+
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-color)] opacity-60 leading-relaxed">
+                  {a.description}
+                </div>
+
+                {unlocked ? (
+                  <span className="text-[9px] font-black uppercase tracking-widest bg-[var(--accent-yellow)] text-black px-3 py-1 mt-auto">
+                    Earned
+                  </span>
+                ) : (
+                  <span className="text-[9px] font-black uppercase tracking-widest border-2 border-[var(--panel-border)] text-[var(--text-color)] opacity-40 px-3 py-1 mt-auto">
+                    Locked
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -274,7 +274,7 @@ export function CanvasWorkspace({
       y,
       size: 90,
       rotation: 0,
-      op: selectedOp,
+      op: 'source-over',
     };
 
     sfx.playSpawn();
