@@ -154,8 +154,8 @@ export function CanvasWorkspace({
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 4]); // Dotted grid
       ctx.beginPath();
-      // Draw 60px interval lines mapping exactly to a 600px square
-      for (let i = 0; i <= CANVAS_SIZE; i += 60) {
+      // Draw 30px interval lines matching the snap grid exactly
+      for (let i = 0; i <= CANVAS_SIZE; i += 30) {
         ctx.moveTo(i, 0);
         ctx.lineTo(i, CANVAS_SIZE);
         ctx.moveTo(0, i);
