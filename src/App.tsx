@@ -37,7 +37,7 @@ export default function App() {
   const [isAudioOn, setIsAudioOn] = useState(true);
   const [levelRatings, setLevelRatings] = useLocalStorage<Record<number, number>>('geome_ratings', {});
 
-  const { recentUnlock, unlock } = useAchievements();
+  const { unlockedIds, recentUnlock, unlock } = useAchievements();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);

@@ -4,6 +4,7 @@ import { Button } from './ui/Button';
 import { getGalleryItems, GalleryItem } from '../utils/gallery';
 import { CANVAS_SIZE, drawShape } from '../game/levels';
 import { ACHIEVEMENTS } from '../game/achievements';
+import { sfx } from '../game/audio';
 
 const THEME_FILL: Record<'light' | 'dark' | 'neon', string> = {
   light: '#111827',
@@ -110,7 +111,7 @@ export function GalleryScreen({ onBack, onSelect, unlockedIds }: GalleryScreenPr
     <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg-color)] font-sans overflow-auto p-12">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <Button variant="ghost" onClick={onBack} className="flex gap-2 items-center text-[var(--text-color)] uppercase font-bold tracking-widest hover:-translate-x-1 transition-transform">
+        <Button variant="ghost" onClick={() => { sfx.playClick(); onBack(); }} className="flex gap-2 items-center text-[var(--text-color)] uppercase font-bold tracking-widest hover:-translate-x-1 transition-transform">
           <ChevronLeft size={20} />
           Back to Menu
         </Button>
@@ -150,7 +151,7 @@ export function GalleryScreen({ onBack, onSelect, unlockedIds }: GalleryScreenPr
         ]).map(({ id, label, icon: Icon }) => (
           <button
             key={id}
-            onClick={() => setActiveTab(id)}
+            onClick={() => { sfx.playClick(); setActiveTab(id); }}
             className={`relative flex items-center gap-2 px-8 py-3 text-[11px] font-black uppercase tracking-widest transition-all
               ${activeTab === id
                 ? 'bg-[var(--accent-yellow)] text-black border-4 border-b-0 border-[var(--panel-border)] -mb-[4px]'
@@ -176,7 +177,7 @@ export function GalleryScreen({ onBack, onSelect, unlockedIds }: GalleryScreenPr
             {items.map((item) => (
               <div
                 key={item.id}
-                onClick={() => onSelect(item)}
+                onClick={() => { sfx.playClick(); onSelect(item); }}
                 className="group relative bg-[var(--panel-bg)] border-4 border-[var(--panel-border)] p-4 cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-[8px_8px_0px_0px_var(--shadow-color)] hover:shadow-[12px_12px_0px_0px_var(--shadow-color)]"
               >
                 <div className="aspect-square border-2 border-[var(--panel-border)] mb-4 overflow-hidden">
@@ -193,7 +194,7 @@ export function GalleryScreen({ onBack, onSelect, unlockedIds }: GalleryScreenPr
                     </span>
                   </div>
                   <button
-                    onClick={(e) => handleDelete(item.id, e)}
+                    onClick={(e) => { sfx.playSlice(); handleDelete(item.id, e); }}
                     className="p-2 text-[var(--text-color)] opacity-40 hover:text-[var(--accent-red)] hover:opacity-100 transition-colors"
                   >
                     <Trash2 size={18} />
