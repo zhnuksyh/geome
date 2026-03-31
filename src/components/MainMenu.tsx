@@ -1,12 +1,9 @@
-import { Play, LayoutGrid, PenLine, Volume2, VolumeX, Sun, Moon, Zap } from 'lucide-react';
-import { sfx } from '../game/audio';
+import { Play, LayoutGrid, PenLine, Sun, Moon, Zap } from 'lucide-react';
 
 interface MainMenuProps {
   onPlay: () => void;
   onSandbox: () => void;
   onGallery: () => void;
-  isAudioOn: boolean;
-  onToggleAudio: () => void;
   theme: 'light' | 'dark' | 'neon';
   onThemeChange: (theme: 'light' | 'dark' | 'neon') => void;
 }
@@ -55,7 +52,7 @@ function ShapeGrid() {
   );
 }
 
-export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudio, theme, onThemeChange }: MainMenuProps) {
+export function MainMenu({ onPlay, onSandbox, onGallery, theme, onThemeChange }: MainMenuProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-color)] font-sans"
@@ -81,7 +78,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
         {/* Buttons */}
         <div className="flex flex-col gap-4 mt-8 w-full max-w-sm">
           <button
-            onClick={() => { sfx.playClick(); onPlay(); }}
+            onClick={() => { onPlay(); }}
             className="relative group w-full"
           >
             <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
@@ -93,7 +90,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
 
           <div className="flex gap-4 w-full">
             <button
-              onClick={() => { sfx.playClick(); onSandbox(); }}
+              onClick={() => { onSandbox(); }}
               className="relative group flex-1"
             >
               <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
@@ -104,7 +101,7 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
             </button>
 
             <button
-              onClick={() => { sfx.playClick(); onGallery(); }}
+              onClick={() => { onGallery(); }}
               className="relative group flex-1"
             >
               <div className="absolute inset-0 bg-[var(--text-color)] translate-x-2 translate-y-2 transition-transform group-hover:translate-x-3 group-hover:translate-y-3" />
@@ -115,19 +112,10 @@ export function MainMenu({ onPlay, onSandbox, onGallery, isAudioOn, onToggleAudi
             </button>
           </div>
 
-          {/* Music + Theme Controls */}
+          {/* Theme Controls */}
           <div className="flex items-center justify-center gap-6 mt-4 pt-6 border-t-2 border-[var(--panel-border)]">
             <button
-              onClick={() => { sfx.playClick(); onToggleAudio(); }}
-              className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest transition-opacity ${isAudioOn ? 'text-[var(--accent-red)] opacity-100' : 'text-[var(--text-color)] opacity-40 hover:opacity-80'}`}
-              title={isAudioOn ? 'Mute Music' : 'Play Music'}
-            >
-              {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
-              <span>{isAudioOn ? 'Music On' : 'Music Off'}</span>
-            </button>
-            <button
               onClick={() => {
-                sfx.playClick();
                 if (theme === 'light') onThemeChange('dark');
                 else if (theme === 'dark') onThemeChange('neon');
                 else onThemeChange('light');

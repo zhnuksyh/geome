@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import type { ToolMode, OpType, ShapeObj, ShapeType } from '../types/game';
 import { CANVAS_SIZE, getShapePath, drawShape, LEVELS, generateId } from '../game/levels';
-import { sfx } from '../game/audio';
 
 interface CanvasWorkspaceProps {
   shapes: ShapeObj[];
@@ -282,7 +281,6 @@ export function CanvasWorkspace({
       op: 'source-over',
     };
 
-    sfx.playSpawn();
     setShapes((prev) => [...prev, newShape]);
     setActiveShapeIds([newShape.id]);
     onSelectTool('select');
@@ -348,7 +346,6 @@ export function CanvasWorkspace({
       // Clicked a shape
       if (e.shiftKey) {
         // Toggle selection
-        sfx.playClick();
         setActiveShapeIds(prev => 
           prev.includes(foundId!) ? prev.filter(id => id !== foundId) : [...prev, foundId!]
         );
@@ -356,7 +353,6 @@ export function CanvasWorkspace({
         // If it's already selected, don't clear the others (so we can drag the group)
         // If it's not selected, make it the only selection
         if (!activeShapeIds.includes(foundId)) {
-          sfx.playClick();
           setActiveShapeIds([foundId]);
           const activeObj = shapes.find((s) => s.id === foundId);
           if (activeObj) onSelectOp(activeObj.op);
@@ -462,7 +458,6 @@ export function CanvasWorkspace({
       const dist = Math.hypot(dx, dy);
       
       if (dist > 10) {
-        sfx.playSlice();
         snapshot();
         const nx = -dy / dist;
         const ny = dx / dist;
@@ -539,7 +534,6 @@ export function CanvasWorkspace({
               }
               return s;
             }));
-            sfx.playSnap();
             snapshot();
             calculateAccuracy();
             glideFrameRef.current = null;
@@ -593,7 +587,6 @@ export function CanvasWorkspace({
         setShapes((prev) => {
           return prev.map(s => {
             if (activeShapeIds.includes(s.id)) {
-              sfx.playSnap();
               const activeShape = { ...s };
               if (e.shiftKey) {
                 // Unconditionally snap to 15 degree increments to lock with 30px position constraints
@@ -660,7 +653,6 @@ export function CanvasWorkspace({
         if (e.key === 'Backspace') e.preventDefault();
         if (activeShapeIds.length > 0) {
           snapshot();
-          sfx.playSlice();
           setShapes((prev) => prev.filter((s) => !activeShapeIds.includes(s.id)));
           setActiveShapeIds([]);
         }

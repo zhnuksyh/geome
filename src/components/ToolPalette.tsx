@@ -1,6 +1,5 @@
 import { Circle, Square, Triangle, Hexagon, PieChart, Combine, Minus, Target, Orbit, MousePointer2, Pentagon, Diamond, CircleDot } from 'lucide-react';
 import type { ToolMode, OpType, ShapeType } from '../types/game';
-import { sfx } from '../game/audio';
 
 interface ToolPaletteProps {
   activeTool: ToolMode;
@@ -49,7 +48,6 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
                 <button
                   key={tool.id}
                   onClick={() => {
-                    sfx.playClick();
                     onSelectTool(tool.id);
                   }}
                   title={`${tool.label} (${tool.key})`}
@@ -84,7 +82,6 @@ export function ToolPalette({ activeTool, selectedOp, onSelectTool, onSelectOp, 
                 <button
                   key={op.id}
                   onClick={() => {
-                    sfx.playClick();
                     onSelectOp(op.id);
                   }}
                   onMouseEnter={() => onHoverOp(op.id)}

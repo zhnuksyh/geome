@@ -7,7 +7,6 @@ import { GameUI } from './components/GameUI';
 import { CanvasWorkspace } from './components/CanvasWorkspace';
 import { WinModal } from './components/WinModal';
 import { MainMenu } from './components/MainMenu';
-import { sfx } from './game/audio';
 import confetti from 'canvas-confetti';
 import { useAchievements } from './game/achievements';
 import { saveGalleryItem, GalleryItem } from './utils/gallery';
@@ -37,7 +36,6 @@ export default function App() {
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isWinModalOpen, setIsWinModalOpen] = useState(false);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
-  const [isAudioOn, setIsAudioOn] = useState(true);
   const [levelRatings, setLevelRatings] = useLocalStorage<Record<number, number>>('geome_ratings', {});
 
   const { unlockedIds, recentUnlock, unlock } = useAchievements();
@@ -52,7 +50,6 @@ export default function App() {
   };
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Seed an initial shape if canvas is empty (e.g. on first visit)
   useEffect(() => {
@@ -95,39 +92,18 @@ export default function App() {
     if (shapes.some(s => s.op !== 'source-over')) unlock('first_boolean');
   }, [shapes, unlock]);
 
-  // ─── Audio Control ─────────────────────────────────────────────────
-  useEffect(() => {
-    sfx.setEnabled(isAudioOn);
-    if (audioRef.current) {
-      if (isAudioOn) {
-        audioRef.current.play().catch(() => {
-          // Browser blocked autoplay — retry on first user gesture
-          const unlock = () => {
-            audioRef.current?.play().catch(() => {});
-          };
-          document.addEventListener('click', unlock, { once: true });
-          document.addEventListener('keydown', unlock, { once: true });
-        });
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isAudioOn]);
-
   // ─── Game Actions ──────────────────────────────────────────────────
   const handleClear = useCallback(() => {
     snapshot();
     setShapes([]);
     setActiveShapeIds([]);
     setMoves(0);
-    sfx.playSlice();
   }, [setShapes, snapshot, setMoves]);
 
   const handleFinalize = useCallback(() => {
     if (gameState === 'sandbox') {
       const success = saveGalleryItem(shapes, theme);
       if (success) {
-        sfx.playSuccess();
         confetti({
           particleCount: 100,
           spread: 50,
@@ -141,7 +117,6 @@ export default function App() {
 
     if (accuracy >= 95.0) {
       setGameState('won');
-      sfx.playSuccess();
       confetti({
         particleCount: 150,
         spread: 70,
@@ -240,7 +215,6 @@ export default function App() {
       setSelectedOp(op);
       if (activeShapeIds.length > 0) {
         snapshot();
-        sfx.playSlice();
         if (containerRef.current) {
           containerRef.current.classList.add('animate-shake');
           setTimeout(() => containerRef.current?.classList.remove('animate-shake'), 200);
@@ -329,8 +303,6 @@ export default function App() {
           onPlay={handleStartCampaign}
           onSandbox={handleSandbox}
           onGallery={() => setGameState('gallery')}
-          isAudioOn={isAudioOn}
-          onToggleAudio={() => setIsAudioOn(!isAudioOn)}
           theme={theme}
           onThemeChange={setTheme}
         />
@@ -411,8 +383,6 @@ export default function App() {
         onDuplicate={handleDuplicateSelected}
         onDelete={handleDeleteSelected}
         onToggleGrid={() => setShowGrid(!showGrid)}
-        isAudioOn={isAudioOn}
-        onToggleAudio={() => setIsAudioOn(!isAudioOn)}
         onHoverOp={setActiveHoverOp}
         theme={theme}
         onThemeChange={setTheme}
@@ -464,8 +434,6 @@ export default function App() {
         />
       )}
 
-      {/* Ambient Audio Player */}
-      <audio ref={audioRef} loop src={`${import.meta.env.BASE_URL}audio/ambient-loop.m4a`} />
     </div>
   );
 }

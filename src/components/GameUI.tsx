@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Volume2, VolumeX, Moon, Sun, Zap, ChevronLeft } from 'lucide-react';
+import { Orbit, Layers, RotateCw, Trash2, Undo2, Copy, Keyboard, Grid, Moon, Sun, Zap, ChevronLeft } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ScorePanel } from './ScorePanel';
 import { ToolPalette } from './ToolPalette';
@@ -22,8 +22,6 @@ interface GameUIProps {
   activeShapeIds: string[];
   theme: 'light' | 'dark' | 'neon';
   onThemeChange: (theme: 'light' | 'dark' | 'neon') => void;
-  isAudioOn: boolean;
-  onToggleAudio: () => void;
   onSelectTool: (tool: ToolMode) => void;
   onSelectOp: (op: OpType) => void;
   onClear: () => void;
@@ -55,8 +53,6 @@ export function GameUI({
   activeShapeIds,
   theme,
   onThemeChange,
-  isAudioOn,
-  onToggleAudio,
   onSelectTool,
   onSelectOp,
   onClear,
@@ -199,15 +195,6 @@ export function GameUI({
                   className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${showGrid ? "text-[var(--accent-red)]" : "text-[var(--text-color)]"} opacity-100 flex-1`}
                 >
                   {showGrid ? "[G] GRID ON" : "[G] GRID OFF"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onToggleAudio}
-                  className={`text-[10px] font-bold uppercase tracking-widest transition-transform duration-200 hover:-translate-y-0.5 ${isAudioOn ? "text-[var(--accent-red)]" : "text-[var(--text-color)]"} opacity-100 flex-1 flex justify-center items-center`}
-                  title={isAudioOn ? "Mute Music" : "Play Ambient Music"}
-                >
-                  {isAudioOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
                 </Button>
                 <Button
                   variant="ghost"

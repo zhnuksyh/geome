@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { sfx } from '../game/audio';
 
 interface TutorialOverlayProps {
   onComplete: () => void;
@@ -50,7 +49,6 @@ export function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   const isLast = step === STEPS.length - 1;
 
   const advance = () => {
-    sfx.playClick();
     if (isLast) {
       onComplete();
     } else {
@@ -59,7 +57,6 @@ export function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   };
 
   const skip = () => {
-    sfx.playClick();
     onComplete();
   };
 
